@@ -36,6 +36,8 @@ public class BowManager implements IManager {
 
     public void registerBow (ShatteredBow bow) {
         BOWS.add(bow);
+
+        ShatteredUtilities.fireShatteredEvent(new BowRegisterEvent(bow));
     }
 
     public ShatteredBow getBow (ItemStack stack) {

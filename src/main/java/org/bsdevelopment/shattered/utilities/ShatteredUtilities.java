@@ -6,14 +6,30 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.regions.Region;
 import lib.brainsynder.utils.BlockLocation;
 import lib.brainsynder.utils.Cuboid;
+import org.bsdevelopment.shattered.events.ShatteredCancelEvent;
+import org.bsdevelopment.shattered.events.ShatteredEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
 
 import java.util.Objects;
 
 public class ShatteredUtilities {
+    private static final PluginManager PLUGIN_MANAGER;
 
+    static {
+        PLUGIN_MANAGER = Bukkit.getPluginManager();
+    }
+
+    public static void fireShatteredEvent (ShatteredEvent event) {
+        PLUGIN_MANAGER.callEvent(event);
+    }
+
+    public static boolean fireShatteredCancelEvent (ShatteredCancelEvent event) {
+        PLUGIN_MANAGER.callEvent(event);
+        return event.isCancelled();
+    }
 
 
     public static boolean isValid (Entity entity) {
