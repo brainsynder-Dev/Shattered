@@ -15,7 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
-// TODO: This is a test
+
 public final class Shattered extends JavaPlugin {
     public static Shattered INSTANCE;
 
