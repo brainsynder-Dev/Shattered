@@ -85,12 +85,22 @@ public class GameStatsManager implements IManager {
         PLUGIN.getDataStorage().save();
     }
 
+    public StorageTagList getCurrentStats() {
+        StorageTagList list = new StorageTagList();
+
+        STATS.forEach(statsOption -> {
+            list.appendTag(statsOption.toCompound());
+        });
+        return list;
+    }
+
     /**
      * This function returns the previous games stats.
      *
      * @return The value of the variable PREVIOUS_STATS.
      */
     public StorageTagList getPreviousStats() {
+        if (PREVIOUS_STATS.getList().isEmpty()) return getCurrentStats();
         return PREVIOUS_STATS;
     }
 

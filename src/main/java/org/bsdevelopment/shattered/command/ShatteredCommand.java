@@ -6,19 +6,19 @@ import lib.brainsynder.commands.annotations.ICommand;
 import lib.brainsynder.utils.Colorize;
 import org.bsdevelopment.shattered.Shattered;
 import org.bsdevelopment.shattered.command.annotations.Permission;
-import org.bsdevelopment.shattered.command.sub.ArenaLocationSubCommand;
-import org.bsdevelopment.shattered.command.sub.BowsSubCommand;
-import org.bsdevelopment.shattered.command.sub.BridgeSubCommand;
-import org.bsdevelopment.shattered.command.sub.TestSubCommand;
+import org.bsdevelopment.shattered.command.sub.*;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @ICommand(name = "shattered")
 public class ShatteredCommand extends ParentCommand<ShatteredSub> {
 
     public ShatteredCommand(Shattered shattered) {
+        registerSub(new GameStatsSubCommand(shattered));
+
         registerSub(new ArenaLocationSubCommand(shattered));
         registerSub(new BowsSubCommand(shattered));
         registerSub(new BridgeSubCommand(shattered));
@@ -45,7 +45,7 @@ public class ShatteredCommand extends ParentCommand<ShatteredSub> {
 
     @Override
     public void run(CommandSender sender) {
-
+        AtomicBoolean sentMainHeader = new AtomicBoolean(false);
         List<ShatteredSub> adminCommands = Lists.newArrayList();
 
         getSubCommands().forEach(sub -> {
@@ -56,6 +56,12 @@ public class ShatteredCommand extends ParentCommand<ShatteredSub> {
                     return;
                 }
                 if (!permission.defaultAllow() && !sender.hasPermission(permission.permission())) return;
+            }
+
+            if (!sentMainHeader.get()) {
+                sender.sendMessage(ChatColor.RESET.toString());
+                sender.sendMessage(Colorize.translateBungeeHex("&r &r &#4CCFE1[] &#c8cad0----- &#5676D7&lMAIN COMMANDS&r&#c8cad0 ----- &#4CCFE1[]"));
+                sentMainHeader.set(true);
             }
             sub.sendUsage(sender);
         });
