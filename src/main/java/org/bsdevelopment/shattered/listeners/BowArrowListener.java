@@ -68,9 +68,7 @@ public class BowArrowListener implements Listener {
         BowInfo info = arrow.getPersistentDataContainer().get(Management.KEY_MANAGER.BOW_INFO_KEY, BowInfoPersistentData.INSTANCE);
         ShatteredBow bow = Objects.requireNonNull(info).getBow();
 
-        Player shooter = info.getShooter();
-
-        Location location = arrow.getLocation(), cloned = arrow.getLocation().clone();
+        Location location = arrow.getLocation();
         if (event.getHitBlock() != null) location = event.getHitBlock().getLocation();
         if (event.getHitEntity() != null) location = event.getHitEntity().getLocation();
         info.setEndLocation(location);
@@ -80,7 +78,7 @@ public class BowArrowListener implements Listener {
         if (bow != null) {
 
             if ((event.getHitEntity() != null) && (event.getHitEntity() instanceof Player player)) {
-                // TODO: Need to do the checks for teams and such
+                // TODO: Need to do the checks for teams and such.
 
                 if (bow instanceof HitPlayerTask hitPlayerTask) hitPlayerTask.onHit(info, player);
             } else if (bow instanceof HitTask hitTask) hitTask.onHit(info);
@@ -89,6 +87,6 @@ public class BowArrowListener implements Listener {
             if (bow.getClass().isAnnotationPresent(UnbreakableGlass.class)) return;
         }
 
-        // TODO: Need to run the glass shattering code here...
+        // TODO: Need to run the glass shattering code here.
     }
 }
