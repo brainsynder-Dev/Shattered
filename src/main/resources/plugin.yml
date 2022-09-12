@@ -1,0 +1,10 @@
+name: Shattered
+version: '${project.version}'
+main: org.bsdevelopment.shattered.Shattered
+api-version: 1.19
+authors: [ brainsynder ]
+description: 3rd re-code of the ShatteredPvP plugin
+website: https://bsdevelopment.org
+
+commands:
+  shattered:
