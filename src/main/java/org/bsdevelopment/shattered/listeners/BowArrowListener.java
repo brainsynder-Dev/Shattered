@@ -10,6 +10,7 @@ import org.bsdevelopment.shattered.managers.Management;
 import org.bsdevelopment.shattered.utilities.BowInfoPersistentData;
 import org.bsdevelopment.shattered.utilities.ShatteredUtilities;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -52,6 +53,11 @@ public class BowArrowListener implements Listener {
                         return;
                     }
 
+                    if (arrow.isInBlock()) {
+                        cancel();
+                        return;
+                    }
+
                     airTask.whileInAir(arrow, info, arrow.getLocation());
                 }
             }.runTaskTimer(PLUGIN, 0, 1);
@@ -76,6 +82,7 @@ public class BowArrowListener implements Listener {
         if (event.getHitBlockFace() != null) info.setBlockFace(event.getHitBlockFace());
 
         if (bow != null) {
+            if (bow.fetchBowData().removeArrowOnHit()) arrow.remove();
 
             if ((event.getHitEntity() != null) && (event.getHitEntity() instanceof Player player)) {
                 // TODO: Need to do the checks for teams and such.
@@ -87,6 +94,11 @@ public class BowArrowListener implements Listener {
             if (bow.getClass().isAnnotationPresent(UnbreakableGlass.class)) return;
         }
 
-        // TODO: Need to run the glass shattering code here.
+        Block block = event.getHitBlock();
+        if (block == null) return;
+
+        // TODO: Add a method from the Gamemode class to handle when an arrow
+        // Hits a block... eg: FruitBuster Gamemode, where the arrow hits a skull
+        Management.GLASS_MANAGER.handleGlass(block);
     }
 }

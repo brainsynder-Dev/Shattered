@@ -1,10 +1,7 @@
 package org.bsdevelopment.shattered.managers;
 
 import org.bsdevelopment.shattered.Shattered;
-import org.bsdevelopment.shattered.managers.list.BowManager;
-import org.bsdevelopment.shattered.managers.list.BridgeManager;
-import org.bsdevelopment.shattered.managers.list.GameStatsManager;
-import org.bsdevelopment.shattered.managers.list.KeyManager;
+import org.bsdevelopment.shattered.managers.list.*;
 
 import java.util.LinkedList;
 
@@ -15,6 +12,7 @@ public class Management {
     public static BowManager BOW_MANAGER;
     public static BridgeManager BRIDGE_MANAGER;
     public static GameStatsManager GAME_STATS_MANAGER;
+    public static GlassManager GLASS_MANAGER;
 
     static {
         MANAGER_LIST = new LinkedList<>();
@@ -25,6 +23,7 @@ public class Management {
         register(BOW_MANAGER = new BowManager());
         register(BRIDGE_MANAGER = new BridgeManager(plugin));
         register(GAME_STATS_MANAGER = new GameStatsManager(plugin));
+        register(GLASS_MANAGER = new GlassManager());
     }
 
     private static void register (IManager manager) {

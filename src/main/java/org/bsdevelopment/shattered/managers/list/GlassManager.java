@@ -2,8 +2,11 @@ package org.bsdevelopment.shattered.managers.list;
 
 import lib.brainsynder.utils.DyeColorWrapper;
 import org.bsdevelopment.shattered.managers.IManager;
+import org.bsdevelopment.shattered.managers.Management;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 
@@ -33,6 +36,26 @@ public class GlassManager implements IManager {
         ORIGINAL_STATE_MAP.clear();
     }
 
+    public void handleGlass(Block block) {
+        if (!block.getType().name().contains("GLASS")) return;
+        Management.GAME_STATS_MANAGER.BLOCKS_BROKEN.increase();
+
+        block.getWorld().playSound(block.getLocation(), Sound.BLOCK_GLASS_BREAK, 1.0F, 1.0F);
+        block.getWorld().spawnParticle(Particle.BLOCK_CRACK, block.getLocation(),
+                20, 0.75, 0.75, 0.75, 0, block.getBlockData());
+
+        if (!isSaved(block)) saveBlock(block);
+
+
+        if ((block.getType() == Material.GLASS)
+                || (block.getType() == Material.GLASS_PANE)) {
+                // TODO: || Options.FRAGILE_GLASS.getValue()) {
+            block.setType(Material.AIR);
+            return;
+        }
+
+        degradeGlass(block);
+    }
 
     private void degradeGlass(Block block) {
         if (!isSaved(block)) return;
@@ -43,7 +66,7 @@ public class GlassManager implements IManager {
             type = "_STAINED_GLASS_PANE";
         }
 
-        Object color = BREAK_ORDER_MAP.getOrDefault(material.name().replace(type, ""), "DEFAULT");
+        Object color = BREAK_ORDER_MAP.getOrDefault(DyeColorWrapper.getByName(material.name().replace(type, "")), "DEFAULT");
         if (color == null) {
             if (material.name().contains("PANE")) {
                 block.setType(Material.GLASS_PANE);
