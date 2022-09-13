@@ -23,6 +23,7 @@
     </properties>
 
     <build>
+        <finalName>${project.artifactId}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -179,4 +180,17 @@
             </exclusions>
         </dependency>
     </dependencies>
+
+
+
+    <distributionManagement>
+        <repository>
+            <id>maven-releases</id>
+            <url>https://repo.pluginwiki.us/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>maven-snapshots</id>
+            <url>https://repo.pluginwiki.us/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
