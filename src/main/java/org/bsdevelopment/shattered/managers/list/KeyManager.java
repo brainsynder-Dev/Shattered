@@ -7,6 +7,7 @@ import org.bukkit.NamespacedKey;
 public class KeyManager implements IManager {
     public NamespacedKey BOW_KEY;
     public NamespacedKey BOW_INFO_KEY;
+    public NamespacedKey ARROW_CHILD_KEY;
 
     private final Shattered PLUGIN;
 
@@ -19,6 +20,7 @@ public class KeyManager implements IManager {
     public void load() {
         BOW_KEY = new NamespacedKey(PLUGIN, "bow");
         BOW_INFO_KEY = new NamespacedKey(PLUGIN, "bow_info");
+        ARROW_CHILD_KEY = new NamespacedKey(PLUGIN, "arrow_child");
     }
 
     @Override

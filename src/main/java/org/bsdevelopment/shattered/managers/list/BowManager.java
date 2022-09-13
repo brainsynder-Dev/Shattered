@@ -49,14 +49,14 @@ public class BowManager implements IManager {
         for (ShatteredBow bow : BOWS) {
             if (bow.getClass().getCanonicalName().equals(storedName)) return bow;
         }
-        throw new NullPointerException("Could not find any bows that matched the ItemStack");
+        return null;
     }
 
     public ShatteredBow getBow (Class<?> bowClass) {
         for (ShatteredBow bow : BOWS) {
             if (bow.getClass().getCanonicalName().equals(bowClass.getCanonicalName())) return bow;
         }
-        throw new NullPointerException("Could not find any bows that use the class: "+bowClass.getSimpleName());
+        return null;
     }
 
     public ShatteredBow getBow (String bowName) {
@@ -64,7 +64,7 @@ public class BowManager implements IManager {
             BowData data = bow.fetchBowData();
             if (data.name().equals(bowName)) return bow;
         }
-        throw new NullPointerException("Could not find any bows that use the name: "+bowName);
+        return null;
     }
 
     public List<ShatteredBow> getBows() {

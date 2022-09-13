@@ -9,6 +9,7 @@ import lib.brainsynder.utils.Cuboid;
 import org.bsdevelopment.shattered.events.ShatteredCancelEvent;
 import org.bsdevelopment.shattered.events.ShatteredEvent;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -31,6 +32,9 @@ public class ShatteredUtilities {
         return event.isCancelled();
     }
 
+    public static BlockLocation getInfiniteY (Cuboid cuboid, Location location) {
+        return new BlockLocation(location.getWorld(), location.getBlockX(), cuboid.getUpperY(), location.getBlockZ());
+    }
 
     public static boolean isValid (Entity entity) {
         if (entity == null) return false;

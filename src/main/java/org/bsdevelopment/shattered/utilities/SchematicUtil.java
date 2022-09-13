@@ -53,6 +53,10 @@ public class SchematicUtil {
         }
     }
 
+    public Cuboid getCurrentRegion() {
+        return currentRegion;
+    }
+
     private void saveRegion () {
         PLUGIN.getDataStorage().setTag("previous-map-region", currentRegion.serialize());
         PLUGIN.getDataStorage().save();

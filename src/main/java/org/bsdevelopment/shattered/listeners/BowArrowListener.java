@@ -1,5 +1,6 @@
 package org.bsdevelopment.shattered.listeners;
 
+import lib.brainsynder.utils.Cuboid;
 import org.bsdevelopment.shattered.Shattered;
 import org.bsdevelopment.shattered.bow.ShatteredBow;
 import org.bsdevelopment.shattered.bow.annotations.UnbreakableGlass;
@@ -37,6 +38,14 @@ public class BowArrowListener implements Listener {
 
         ShatteredBow bow = Management.BOW_MANAGER.getBow(Objects.requireNonNull(event.getBow()));
 
+        Cuboid region = PLUGIN.getSchematics().getCurrentRegion();
+        if ((bow != null) &&
+                ((region == null) || (!region.contains(ShatteredUtilities.getInfiniteY(region, player.getLocation()))))) {
+            event.setCancelled(true);
+            return;
+        }
+
+
         BowForce force = BowForce.getForce(event.getForce());
         BowInfo info = new BowInfo(player, arrow.getLocation(), force).setBow(bow);
 
@@ -50,6 +59,13 @@ public class BowArrowListener implements Listener {
                     if (!ShatteredUtilities.isValid(arrow)) {
                         cancel();
                         if (bow instanceof RemoveTask removeTask) removeTask.onRemove(info);
+                        return;
+                    }
+
+                    if ((PLUGIN.getSchematics().getCurrentRegion() == null)
+                            || (!region.contains(ShatteredUtilities.getInfiniteY(region, arrow.getLocation())))) {
+                        cancel();
+                        arrow.remove();
                         return;
                     }
 
@@ -71,6 +87,13 @@ public class BowArrowListener implements Listener {
         PersistentDataContainer container = arrow.getPersistentDataContainer();
 
         if (!container.has(Management.KEY_MANAGER.BOW_INFO_KEY, BowInfoPersistentData.INSTANCE)) return;
+
+        Cuboid region = PLUGIN.getSchematics().getCurrentRegion();
+        if (region == null) {
+            arrow.remove();
+            return;
+        }
+
         BowInfo info = arrow.getPersistentDataContainer().get(Management.KEY_MANAGER.BOW_INFO_KEY, BowInfoPersistentData.INSTANCE);
         ShatteredBow bow = Objects.requireNonNull(info).getBow();
 
@@ -82,6 +105,8 @@ public class BowArrowListener implements Listener {
         if (event.getHitBlockFace() != null) info.setBlockFace(event.getHitBlockFace());
 
         if (bow != null) {
+            if (!region.contains(ShatteredUtilities.getInfiniteY(region, arrow.getLocation()))) return;
+
             if (bow.fetchBowData().removeArrowOnHit()) arrow.remove();
 
             if ((event.getHitEntity() != null) && (event.getHitEntity() instanceof Player player)) {
@@ -90,6 +115,44 @@ public class BowArrowListener implements Listener {
                 if (bow instanceof HitPlayerTask hitPlayerTask) hitPlayerTask.onHit(info, player);
             } else if (bow instanceof HitTask hitTask) hitTask.onHit(info);
             if (bow instanceof RemoveTask removeTask) removeTask.onRemove(info);
+
+            if (bow.getClass().isAnnotationPresent(UnbreakableGlass.class)) return;
+        }
+
+        Block block = event.getHitBlock();
+        if (block == null) return;
+
+        // TODO: Add a method from the Gamemode class to handle when an arrow
+        // Hits a block... eg: FruitBuster Gamemode, where the arrow hits a skull
+        Management.GLASS_MANAGER.handleGlass(block);
+    }
+
+
+
+
+    @EventHandler
+    public void onArrowChildHit (ProjectileHitEvent event) {
+        if (!(event.getEntity() instanceof Arrow arrow)) return;
+        PersistentDataContainer container = arrow.getPersistentDataContainer();
+
+        if (!container.has(Management.KEY_MANAGER.ARROW_CHILD_KEY, BowInfoPersistentData.INSTANCE)) return;
+
+        Cuboid region = PLUGIN.getSchematics().getCurrentRegion();
+        if (region == null) {
+            arrow.remove();
+            return;
+        }
+
+        BowInfo info = arrow.getPersistentDataContainer().get(Management.KEY_MANAGER.ARROW_CHILD_KEY, BowInfoPersistentData.INSTANCE);
+        ShatteredBow bow = Objects.requireNonNull(info).getBow();
+
+        if (bow != null) {
+            if (!region.contains(ShatteredUtilities.getInfiniteY(region, arrow.getLocation()))) {
+                arrow.remove();
+                return;
+            }
+
+            arrow.remove();
 
             if (bow.getClass().isAnnotationPresent(UnbreakableGlass.class)) return;
         }
