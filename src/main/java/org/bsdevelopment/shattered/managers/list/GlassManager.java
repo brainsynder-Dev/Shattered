@@ -41,8 +41,8 @@ public class GlassManager implements IManager {
         Management.GAME_STATS_MANAGER.BLOCKS_BROKEN.increase();
 
         block.getWorld().playSound(block.getLocation(), Sound.BLOCK_GLASS_BREAK, 1.0F, 1.0F);
-        block.getWorld().spawnParticle(Particle.BLOCK_CRACK, block.getLocation(),
-                20, 0.75, 0.75, 0.75, 0, block.getBlockData());
+        block.getWorld().spawnParticle(Particle.BLOCK_CRACK, block.getLocation().add(0.5, 0, 0.5),
+                50, 0.5, 0.5, 0.5, 0, block.getBlockData());
 
         if (!isSaved(block)) saveBlock(block);
 
