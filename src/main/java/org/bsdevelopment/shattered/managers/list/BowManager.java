@@ -4,6 +4,7 @@ import org.bsdevelopment.shattered.bow.ShatteredBow;
 import org.bsdevelopment.shattered.bow.annotations.BowData;
 import org.bsdevelopment.shattered.bow.list.DrunkerBow;
 import org.bsdevelopment.shattered.bow.list.RainmakerBow;
+import org.bsdevelopment.shattered.bow.list.ScatterBlastBow;
 import org.bsdevelopment.shattered.bow.list.StarterBow;
 import org.bsdevelopment.shattered.events.core.BowRegisterEvent;
 import org.bsdevelopment.shattered.managers.IManager;
@@ -13,15 +14,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Objects;
 
 public class BowManager implements IManager {
-    private final List<ShatteredBow> BOWS;
+    private final LinkedList<ShatteredBow> BOWS;
 
     public BowManager() {
-        BOWS = new ArrayList<>();
+        BOWS = new LinkedList<>();
     }
 
     @Override
@@ -29,6 +29,7 @@ public class BowManager implements IManager {
         registerBow(new StarterBow());
         registerBow(new DrunkerBow());
         registerBow(new RainmakerBow());
+        registerBow(new ScatterBlastBow());
     }
 
     @Override
@@ -69,7 +70,7 @@ public class BowManager implements IManager {
         return null;
     }
 
-    public List<ShatteredBow> getBows() {
+    public LinkedList<ShatteredBow> getBows() {
         return BOWS;
     }
 }
