@@ -3,6 +3,10 @@ version: '${project.version}'
 main: org.bsdevelopment.shattered.Shattered
 api-version: 1.19
 authors: [ brainsynder ]
+
+depend:
+  - WorldEdit
+
 description: 3rd re-code of the ShatteredPvP plugin
 website: https://bsdevelopment.org
 
