@@ -6,8 +6,6 @@ import org.bsdevelopment.shattered.bow.annotations.BowData;
 import org.bsdevelopment.shattered.bow.data.BowInfo;
 import org.bsdevelopment.shattered.bow.data.BowType;
 import org.bsdevelopment.shattered.bow.tasks.AirTask;
-import org.bsdevelopment.shattered.managers.Management;
-import org.bsdevelopment.shattered.utilities.BowInfoPersistentData;
 import org.bsdevelopment.shattered.utilities.ShatteredUtilities;
 import org.bukkit.Location;
 import org.bukkit.entity.Arrow;
@@ -42,10 +40,7 @@ public class ScatterBlastBow extends ShatteredBow implements AirTask {
 
         if (fires >= 2) {
             for (int i = 0; i < 3; i++) {
-                Arrow newArrow = arrow.getWorld().spawn(arrow.getLocation(), Arrow.class);
-                newArrow.setVelocity(ShatteredUtilities.spread(arrow.getVelocity(), MathUtils.random(-0.9F, 0.9F)));
-                newArrow.setShooter(arrow.getShooter());
-                newArrow.getPersistentDataContainer().set(Management.KEY_MANAGER.ARROW_CHILD_KEY, BowInfoPersistentData.INSTANCE, info);
+                ShatteredUtilities.spawnArrowRandomized(info, currentLocation, ShatteredUtilities.spread(arrow.getVelocity(), MathUtils.random(-0.9F, 0.9F)));
             }
             fires = 0;
         }
