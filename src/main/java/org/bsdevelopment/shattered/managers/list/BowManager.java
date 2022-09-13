@@ -4,6 +4,7 @@ import org.bsdevelopment.shattered.bow.ShatteredBow;
 import org.bsdevelopment.shattered.bow.annotations.BowData;
 import org.bsdevelopment.shattered.bow.list.DrunkerBow;
 import org.bsdevelopment.shattered.bow.list.RainmakerBow;
+import org.bsdevelopment.shattered.bow.list.StarterBow;
 import org.bsdevelopment.shattered.events.core.BowRegisterEvent;
 import org.bsdevelopment.shattered.managers.IManager;
 import org.bsdevelopment.shattered.managers.Management;
@@ -25,6 +26,7 @@ public class BowManager implements IManager {
 
     @Override
     public void load() {
+        registerBow(new StarterBow());
         registerBow(new DrunkerBow());
         registerBow(new RainmakerBow());
     }
