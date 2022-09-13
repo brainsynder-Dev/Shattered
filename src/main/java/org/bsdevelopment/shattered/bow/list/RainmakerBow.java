@@ -6,6 +6,8 @@ import org.bsdevelopment.shattered.bow.annotations.BowData;
 import org.bsdevelopment.shattered.bow.data.BowInfo;
 import org.bsdevelopment.shattered.bow.data.BowType;
 import org.bsdevelopment.shattered.bow.tasks.AirTask;
+import org.bsdevelopment.shattered.managers.Management;
+import org.bsdevelopment.shattered.utilities.BowInfoPersistentData;
 import org.bukkit.Location;
 import org.bukkit.entity.Arrow;
 import org.bukkit.util.Vector;
@@ -46,6 +48,7 @@ public class RainmakerBow extends ShatteredBow implements AirTask {
 
                 Arrow newArrow = arrow.getWorld().spawnArrow(arrow.getLocation(), new Vector(x, -1, z), speed, spread);
                 newArrow.setShooter(arrow.getShooter());
+                newArrow.getPersistentDataContainer().set(Management.KEY_MANAGER.ARROW_CHILD_KEY, BowInfoPersistentData.INSTANCE, info);
             }
             fires = 0;
         }
