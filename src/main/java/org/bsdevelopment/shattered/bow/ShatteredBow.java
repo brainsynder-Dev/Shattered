@@ -42,11 +42,11 @@ public abstract class ShatteredBow {
             typeBuilder.append(MessageType.SHATTERED_GRAY).append(type.name()).append(MessageType.SHATTERED_BLUE).append(" | ");
         }
 
-        ItemStack item = new ItemStack(Material.BOW, 1);
-        item.addEnchantment(Enchantment.ARROW_INFINITE, 1);
+        ItemStack item = new ItemStack(bowData.itemIsBow() ? Material.BOW : Material.CROSSBOW, 1);
+        if (bowData.itemIsBow()) item.addEnchantment(Enchantment.ARROW_INFINITE, 1);
 
         ItemMeta meta = Objects.requireNonNull(item.getItemMeta());
-        ((Damageable) meta).setDamage((short) (384 - uses));
+        ((Damageable) meta).setDamage((short) ((bowData.itemIsBow() ? 384 : 465) - uses));
 
         meta.setDisplayName(Colorize.translateBungeeHex(MessageType.SHATTERED_BLUE + bowData.name()));
 
@@ -67,16 +67,19 @@ public abstract class ShatteredBow {
 
         meta.getPersistentDataContainer().set(Management.KEY_MANAGER.BOW_KEY, PersistentDataType.STRING, getClass().getCanonicalName());
 
-        item.setItemMeta(meta);
+        item.setItemMeta(modifyMeta(meta));
 
         return item;
-
     }
 
     public BowData fetchBowData() {
         if (!getClass().isAnnotationPresent(BowData.class))
             throw new NullPointerException("Class '" + getClass().getSimpleName() + "' is missing the '@BowData' annotation");
         return getClass().getAnnotation(BowData.class);
+    }
+
+    public ItemMeta modifyMeta (ItemMeta meta) {
+        return meta;
     }
 
 }

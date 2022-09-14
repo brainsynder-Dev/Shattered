@@ -45,4 +45,10 @@ public @interface BowData {
      * Should the arrow fired from the bow be immediately removed when it hits something
      */
     boolean removeArrowOnHit() default true;
+
+    /**
+     * If this is set to true the item will be set to bow
+     * If this is set to false the item will be set to a crossbow
+     */
+    boolean itemIsBow() default true;
 }
