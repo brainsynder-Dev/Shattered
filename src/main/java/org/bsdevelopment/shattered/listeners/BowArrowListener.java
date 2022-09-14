@@ -58,7 +58,7 @@ public class BowArrowListener implements Listener {
                 public void run() {
                     if (!ShatteredUtilities.isValid(arrow)) {
                         cancel();
-                        if (bow instanceof RemoveTask removeTask) removeTask.onRemove(info);
+                        if (bow instanceof RemoveTask removeTask) removeTask.onRemove(arrow, info);
                         return;
                     }
 
@@ -107,14 +107,15 @@ public class BowArrowListener implements Listener {
         if (bow != null) {
             if (!region.contains(ShatteredUtilities.getInfiniteY(region, arrow.getLocation()))) return;
 
-            if (bow.fetchBowData().removeArrowOnHit()) arrow.remove();
 
             if ((event.getHitEntity() != null) && (event.getHitEntity() instanceof Player player)) {
                 // TODO: Need to do the checks for teams and such.
 
-                if (bow instanceof HitPlayerTask hitPlayerTask) hitPlayerTask.onHit(info, player);
-            } else if (bow instanceof HitTask hitTask) hitTask.onHit(info);
-            if (bow instanceof RemoveTask removeTask) removeTask.onRemove(info);
+                if (bow instanceof HitPlayerTask hitPlayerTask) hitPlayerTask.onHit(arrow, info, player);
+            } else if (bow instanceof HitTask hitTask) hitTask.onHit(arrow, info);
+            if (bow instanceof RemoveTask removeTask) removeTask.onRemove(arrow, info);
+
+            if (bow.fetchBowData().removeArrowOnHit()) arrow.remove();
 
             if (bow.getClass().isAnnotationPresent(UnbreakableGlass.class)) return;
         }

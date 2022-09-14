@@ -9,6 +9,7 @@ import org.bsdevelopment.shattered.bow.data.BowType;
 import org.bsdevelopment.shattered.bow.tasks.HitTask;
 import org.bsdevelopment.shattered.managers.Management;
 import org.bsdevelopment.shattered.utilities.ShatteredUtilities;
+import org.bukkit.entity.Arrow;
 
 import java.util.Objects;
 
@@ -25,10 +26,10 @@ public class FixerBow extends ShatteredBow implements HitTask {
     public void cleanup() {}
 
     @Override
-    public void onHit(BowInfo info) {
-        int radius = 1;
-        if (info.getForce() == BowForce.MEDIUM) radius = 2;
-        if (info.getForce() == BowForce.MAX) radius = 3;
+    public void onHit(Arrow arrow, BowInfo info) {
+        int radius = 2;
+        if (info.getForce() == BowForce.MEDIUM) radius = 3;
+        if (info.getForce() == BowForce.MAX) radius = 4;
 
 
         ShatteredUtilities.getBlocksInRadius(Objects.requireNonNull(info.getEndLocation()), radius, false).forEach(block -> {

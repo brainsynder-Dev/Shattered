@@ -1,6 +1,7 @@
 package org.bsdevelopment.shattered.bow.tasks;
 
 import org.bsdevelopment.shattered.bow.data.BowInfo;
+import org.bukkit.entity.Arrow;
 
 public interface RemoveTask {
     /**
@@ -9,5 +10,5 @@ public interface RemoveTask {
      *
      * @param info The BowInfo object that contains all the information about the bow.
      */
-    void onRemove(BowInfo info);
+    void onRemove(Arrow arrow, BowInfo info);
 }

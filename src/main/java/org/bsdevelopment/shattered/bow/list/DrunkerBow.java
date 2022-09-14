@@ -12,6 +12,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -33,7 +34,7 @@ public class DrunkerBow extends ShatteredBow implements HitTask, HitPlayerTask {
     public void cleanup() {}
 
     @Override
-    public void onHit(BowInfo info, Player player) {
+    public void onHit(Arrow arrow, BowInfo info, Player player) {
         if (player.getGameMode() == GameMode.SPECTATOR) return;
         if (player.hasPotionEffect(PotionEffectType.CONFUSION)) return;
 
@@ -41,13 +42,13 @@ public class DrunkerBow extends ShatteredBow implements HitTask, HitPlayerTask {
 
         player.spawnParticle(org.bukkit.Particle.ITEM_CRACK, player.getEyeLocation(),
                 10, 0.5, 0.5, 0.5, 0, new ItemStack(Material.EGG));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20 * 60, 10));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * 60, 2));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20 * 40, 10));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * 40, 2));
 
     }
 
     @Override
-    public void onHit(BowInfo info) {
+    public void onHit(Arrow arrow, BowInfo info) {
         double radius = 1.5;
         int time = 5;
         if (info.getForce() == BowForce.MEDIUM) {
