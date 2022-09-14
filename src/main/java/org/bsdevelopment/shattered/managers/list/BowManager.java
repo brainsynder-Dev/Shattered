@@ -1,5 +1,6 @@
 package org.bsdevelopment.shattered.managers.list;
 
+import org.bsdevelopment.shattered.Shattered;
 import org.bsdevelopment.shattered.bow.ShatteredBow;
 import org.bsdevelopment.shattered.bow.annotations.BowData;
 import org.bsdevelopment.shattered.bow.list.*;
@@ -10,58 +11,71 @@ import org.bsdevelopment.shattered.utilities.ShatteredUtilities;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.Plugin;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Objects;
 
 public class BowManager implements IManager {
-    private final LinkedList<ShatteredBow> BOWS;
+    private final Map<Plugin, LinkedList<ShatteredBow>> BOWS_MAP;
 
     public BowManager() {
-        BOWS = new LinkedList<>();
+        BOWS_MAP = new HashMap<>();
     }
 
     @Override
     public void load() {
-        registerBow(new StarterBow());
-        registerBow(new DrunkerBow());
-        registerBow(new RainmakerBow());
-        registerBow(new ScatterBlastBow());
-        registerBow(new FixerBow());
+        Shattered plugin = Shattered.INSTANCE;
+
+        registerBow(plugin, new StarterBow());
+        registerBow(plugin, new DrunkerBow());
+        registerBow(plugin, new RainmakerBow());
+        registerBow(plugin, new ScatterBlastBow());
+        registerBow(plugin, new FixerBow());
+        registerBow(plugin, new WallerBow());
     }
 
     @Override
     public void cleanup() {
-        BOWS.forEach(ShatteredBow::cleanup);
+        BOWS_MAP.values().forEach(bows -> bows.forEach(ShatteredBow::cleanup));
 
-        BOWS.clear();
+        BOWS_MAP.clear();
     }
 
-    public void registerBow (ShatteredBow bow) {
-        BOWS.add(bow);
+    public void registerBow (Plugin plugin, ShatteredBow bow) {
+        LinkedList<ShatteredBow> list = BOWS_MAP.getOrDefault(plugin, new LinkedList<>());
+        list.addLast(bow);
+
+        BOWS_MAP.put(plugin, list);
 
         ShatteredUtilities.fireShatteredEvent(new BowRegisterEvent(bow));
+    }
+
+    public void unregisterBows (Plugin plugin) {
+        BOWS_MAP.remove(plugin);
     }
 
     public ShatteredBow getBow (ItemStack stack) {
         ItemMeta meta = Objects.requireNonNull(stack.getItemMeta());
         String storedName = meta.getPersistentDataContainer().getOrDefault(Management.KEY_MANAGER.BOW_KEY, PersistentDataType.STRING, "UNKNOWN");
 
-        for (ShatteredBow bow : BOWS) {
+        for (ShatteredBow bow : getBows()) {
             if (bow.getClass().getCanonicalName().equals(storedName)) return bow;
         }
         return null;
     }
 
     public ShatteredBow getBow (Class<?> bowClass) {
-        for (ShatteredBow bow : BOWS) {
+        for (ShatteredBow bow : getBows()) {
             if (bow.getClass().getCanonicalName().equals(bowClass.getCanonicalName())) return bow;
         }
         return null;
     }
 
     public ShatteredBow getBow (String bowName) {
-        for (ShatteredBow bow : BOWS) {
+        for (ShatteredBow bow : getBows()) {
             BowData data = bow.fetchBowData();
             if (data.name().equals(bowName)) return bow;
         }
@@ -69,6 +83,8 @@ public class BowManager implements IManager {
     }
 
     public LinkedList<ShatteredBow> getBows() {
-        return BOWS;
+        LinkedList<ShatteredBow> bows = new LinkedList<>();
+        BOWS_MAP.forEach((plugin, shatteredBows) -> shatteredBows.forEach(bows::addLast));
+        return bows;
     }
 }
