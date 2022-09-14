@@ -8,10 +8,13 @@ import org.bsdevelopment.shattered.events.core.BowRegisterEvent;
 import org.bsdevelopment.shattered.managers.IManager;
 import org.bsdevelopment.shattered.managers.Management;
 import org.bsdevelopment.shattered.utilities.ShatteredUtilities;
+import org.bukkit.Bukkit;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -20,9 +23,11 @@ import java.util.Objects;
 
 public class BowManager implements IManager {
     private final Map<Plugin, LinkedList<ShatteredBow>> BOWS_MAP;
+    private final PluginManager PLUGIN_MANAGER;
 
     public BowManager() {
         BOWS_MAP = new HashMap<>();
+        PLUGIN_MANAGER = Bukkit.getPluginManager();
     }
 
     @Override
@@ -51,6 +56,8 @@ public class BowManager implements IManager {
         BOWS_MAP.put(plugin, list);
 
         ShatteredUtilities.fireShatteredEvent(new BowRegisterEvent(bow));
+
+        if (bow instanceof Listener listener) PLUGIN_MANAGER.registerEvents(listener, plugin);
     }
 
     public void unregisterBows (Plugin plugin) {
