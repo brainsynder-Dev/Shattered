@@ -7,6 +7,7 @@ import com.sk89q.worldedit.regions.Region;
 import lib.brainsynder.math.MathUtils;
 import lib.brainsynder.utils.BlockLocation;
 import lib.brainsynder.utils.Cuboid;
+import lib.brainsynder.utils.DirectionUtils;
 import org.bsdevelopment.shattered.bow.data.BowInfo;
 import org.bsdevelopment.shattered.events.ShatteredCancelEvent;
 import org.bsdevelopment.shattered.events.ShatteredEvent;
@@ -226,6 +227,25 @@ public class ShatteredUtilities {
         }
 
         return new Vector(x, y, z);
+    }
+
+    /**
+     * It returns the cardinal direction that the entity is facing
+     *     Eg: NORTH, EAST, SOUTH, WEST
+     *
+     * @param entity The entity you want to get the direction of.
+     * @return The direction the entity is facing.
+     */
+    public static DirectionUtils.Direction getCardinalDirection(Entity entity) {
+        double rotation = (entity.getLocation().getYaw() - 90.0F) % 360.0F;
+        if (rotation < 0.0D) rotation += 360.0D;
+
+        if ((0.0D <= rotation) && (rotation < 45.0D)) return DirectionUtils.Direction.WEST;
+        if ((45.0D <= rotation) && (rotation < 135.0D)) return DirectionUtils.Direction.NORTH;
+        if ((135.0D <= rotation) && (rotation < 225.0D)) return DirectionUtils.Direction.EAST;
+        if ((225.0D <= rotation) && (rotation < 315.0D)) return DirectionUtils.Direction.SOUTH;
+        if ((315.0D <= rotation) && (rotation < 360.0D)) return DirectionUtils.Direction.WEST;
+        return null;
     }
 
 }
