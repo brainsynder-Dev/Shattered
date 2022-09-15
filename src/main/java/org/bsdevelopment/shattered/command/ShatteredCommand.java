@@ -22,6 +22,7 @@ public class ShatteredCommand extends ParentCommand<ShatteredSub> {
         registerSub(new ArenaLocationSubCommand(shattered));
         registerSub(new BowsSubCommand(shattered));
         registerSub(new BridgeSubCommand(shattered));
+        registerSub(new AddonReloadSubCommand(shattered));
         registerSub(new TestSubCommand(shattered));
 //        registerSub(new StartSubCommand(gameManager));
 //        registerSub(new EndSubCommand(gameManager));

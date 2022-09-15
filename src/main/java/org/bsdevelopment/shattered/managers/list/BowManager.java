@@ -1,12 +1,14 @@
 package org.bsdevelopment.shattered.managers.list;
 
 import org.bsdevelopment.shattered.Shattered;
+import org.bsdevelopment.shattered.api.ShatteredAddon;
 import org.bsdevelopment.shattered.bow.ShatteredBow;
 import org.bsdevelopment.shattered.bow.annotations.BowData;
 import org.bsdevelopment.shattered.bow.list.*;
 import org.bsdevelopment.shattered.events.core.BowRegisterEvent;
 import org.bsdevelopment.shattered.managers.IManager;
 import org.bsdevelopment.shattered.managers.Management;
+import org.bsdevelopment.shattered.utilities.MessageType;
 import org.bsdevelopment.shattered.utilities.ShatteredUtilities;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
@@ -22,7 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class BowManager implements IManager {
-    private final Map<Plugin, LinkedList<ShatteredBow>> BOWS_MAP;
+    private final Map<String, LinkedList<ShatteredBow>> BOWS_MAP;
     private final PluginManager PLUGIN_MANAGER;
 
     public BowManager() {
@@ -49,19 +51,28 @@ public class BowManager implements IManager {
         BOWS_MAP.clear();
     }
 
-    public void registerBow (Plugin plugin, ShatteredBow bow) {
-        LinkedList<ShatteredBow> list = BOWS_MAP.getOrDefault(plugin, new LinkedList<>());
-        list.addLast(bow);
+    public void registerBow (ShatteredAddon addon, ShatteredBow bow) {
+        registerBow0(addon.getNamespace().namespace(), bow);
+        Shattered.INSTANCE.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.MESSAGE, "Registered bow '"+MessageType.SHATTERED_BLUE+bow.fetchBowData().name()+MessageType.SHATTERED_GRAY+"' from the addon: "+MessageType.SHATTERED_BLUE+addon.getNamespace().namespace());
+    }
 
-        BOWS_MAP.put(plugin, list);
-
-        ShatteredUtilities.fireShatteredEvent(new BowRegisterEvent(bow));
+    private void registerBow (Plugin plugin, ShatteredBow bow) {
+        registerBow0(plugin.getDescription().getName(), bow);
 
         if (bow instanceof Listener listener) PLUGIN_MANAGER.registerEvents(listener, plugin);
     }
 
-    public void unregisterBows (Plugin plugin) {
-        BOWS_MAP.remove(plugin);
+    private void registerBow0 (String key, ShatteredBow bow) {
+        LinkedList<ShatteredBow> list = BOWS_MAP.getOrDefault(key, new LinkedList<>());
+        list.addLast(bow);
+
+        BOWS_MAP.put(key, list);
+
+        ShatteredUtilities.fireShatteredEvent(new BowRegisterEvent(bow));
+    }
+
+    public void unregisterBows (ShatteredAddon addon) {
+        BOWS_MAP.remove(addon.getNamespace().namespace());
     }
 
     public ShatteredBow getBow (ItemStack stack) {

@@ -23,6 +23,7 @@ public final class Shattered extends JavaPlugin {
     private Config configuration;
 
     private File SCHEMATICS_FOLDER;
+    private File ADDONS_FOLDER;
     private SchematicUtil SCHEMATICS;
 
     @Override
@@ -40,6 +41,9 @@ public final class Shattered extends JavaPlugin {
 
         SCHEMATICS_FOLDER = new File(getDataFolder() + File.separator + "maps-schematics");
         if (!SCHEMATICS_FOLDER.exists()) SCHEMATICS_FOLDER.mkdirs();
+
+        ADDONS_FOLDER = new File(getDataFolder() + File.separator + "addons");
+        if (!ADDONS_FOLDER.exists()) ADDONS_FOLDER.mkdirs();
 
         SCHEMATICS = new SchematicUtil(dataStorage.getLocation("arena-location", null), this);
 
@@ -77,6 +81,10 @@ public final class Shattered extends JavaPlugin {
 
     public File getSchematicsFolder() {
         return SCHEMATICS_FOLDER;
+    }
+
+    public File getAddonsFolder() {
+        return ADDONS_FOLDER;
     }
 
     public SchematicUtil getSchematics() {

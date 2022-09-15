@@ -13,6 +13,7 @@ public class Management {
     public static BridgeManager BRIDGE_MANAGER;
     public static GameStatsManager GAME_STATS_MANAGER;
     public static GlassManager GLASS_MANAGER;
+    public static AddonManager ADDON_MANAGER;
 
     static {
         MANAGER_LIST = new LinkedList<>();
@@ -24,6 +25,8 @@ public class Management {
         register(BRIDGE_MANAGER = new BridgeManager(plugin));
         register(GAME_STATS_MANAGER = new GameStatsManager(plugin));
         register(GLASS_MANAGER = new GlassManager());
+
+        register(ADDON_MANAGER = new AddonManager(plugin));
     }
 
     private static void register (IManager manager) {
