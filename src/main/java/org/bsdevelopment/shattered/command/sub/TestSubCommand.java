@@ -6,10 +6,12 @@ import org.bsdevelopment.shattered.Shattered;
 import org.bsdevelopment.shattered.command.ShatteredSub;
 import org.bsdevelopment.shattered.command.annotations.AdditionalUsage;
 import org.bsdevelopment.shattered.command.annotations.Permission;
+import org.bsdevelopment.shattered.managers.Management;
 import org.bsdevelopment.shattered.utilities.Cooldown;
 import org.bsdevelopment.shattered.utilities.MessageType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 
@@ -94,10 +96,16 @@ public class TestSubCommand extends ShatteredSub {
             })) return;
 
             COOLDOWN.activateCooldown(mapsCooldownKey);
+            Management.GLASS_MANAGER.resetBlocks();
 
-            getShattered().getSchematics().resetRegion(() -> {
-                getShattered().sendPrefixedMessage(sender, MessageType.MESSAGE, "Map has been reset.");
-            });
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    getShattered().getSchematics().resetRegion(() -> {
+                        getShattered().sendPrefixedMessage(sender, MessageType.MESSAGE, "Map has been reset.");
+                    });
+                }
+            }.runTaskLater(getShattered(), 10);
             return;
         }
 
