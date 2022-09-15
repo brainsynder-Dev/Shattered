@@ -1,14 +1,17 @@
 package org.bsdevelopment.shattered.managers.list;
 
+import lib.brainsynder.nbt.StorageTagCompound;
+import lib.brainsynder.nbt.StorageTagList;
 import lib.brainsynder.utils.DyeColorWrapper;
+import org.bsdevelopment.shattered.Shattered;
+import org.bsdevelopment.shattered.files.DataStorage;
 import org.bsdevelopment.shattered.managers.IManager;
 import org.bsdevelopment.shattered.managers.Management;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bsdevelopment.shattered.utilities.MessageType;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,8 +19,10 @@ import java.util.Map;
 public class GlassManager implements IManager {
     private final Map<DyeColorWrapper, Object> BREAK_ORDER_MAP;
     private final Map<Location, BlockState> ORIGINAL_STATE_MAP;
+    private final Shattered PLUGIN;
 
-    public GlassManager() {
+    public GlassManager(Shattered plugin) {
+        PLUGIN = plugin;
         BREAK_ORDER_MAP = new HashMap<>();
         ORIGINAL_STATE_MAP = new HashMap<>();
     }
@@ -28,10 +33,46 @@ public class GlassManager implements IManager {
         BREAK_ORDER_MAP.put(DyeColorWrapper.GRAY, DyeColorWrapper.LIGHT_GRAY);
         BREAK_ORDER_MAP.put(DyeColorWrapper.LIGHT_GRAY, DyeColorWrapper.WHITE);
         BREAK_ORDER_MAP.put(DyeColorWrapper.WHITE, null);
+
+
+        DataStorage storage = PLUGIN.getDataStorage();
+        if (!storage.hasKey("glass-reset-list")) return;
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "Clearing old glass blocks...");
+
+                StorageTagList list = (StorageTagList) storage.getTag("glass-reset-list");
+                list.getList().forEach(base -> {
+                    StorageTagCompound compound = (StorageTagCompound) base;
+                    Location location = new Location(Bukkit.getWorld(compound.getString("world")), compound.getDouble("x"), compound.getDouble("y"), compound.getDouble("z"));
+                    Block block = location.getBlock();
+                    block.setType(Material.AIR);
+                    block.getState().update();
+                });
+
+
+                storage.remove("glass-reset-list");
+                storage.save();
+            }
+        }.runTaskLater(PLUGIN, 30);
     }
 
     @Override
     public void cleanup() {
+        StorageTagList list = new StorageTagList();
+        ORIGINAL_STATE_MAP.forEach((location, blockState) -> {
+            StorageTagCompound compound = new StorageTagCompound();
+            compound.setString("world", location.getWorld().getName());
+            compound.setDouble("x", location.getX());
+            compound.setDouble("y", location.getY());
+            compound.setDouble("z", location.getZ());
+            list.appendTag(compound);
+        });
+
+        PLUGIN.getDataStorage().setTag("glass-reset-list", list);
+        PLUGIN.getDataStorage().save();
+
         BREAK_ORDER_MAP.clear();
         ORIGINAL_STATE_MAP.clear();
     }
@@ -94,7 +135,9 @@ public class GlassManager implements IManager {
 
     public void resetBlocks() {
         if (ORIGINAL_STATE_MAP.isEmpty()) return;
-        ORIGINAL_STATE_MAP.forEach((location, blockState) -> blockState.update(true));
+        ORIGINAL_STATE_MAP.forEach((location, blockState) -> {
+            if (blockState.getType() == Material.AIR) blockState.update(true);
+        });
         ORIGINAL_STATE_MAP.clear();
     }
 

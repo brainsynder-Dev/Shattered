@@ -24,7 +24,7 @@ public class Management {
         register(BOW_MANAGER = new BowManager());
         register(BRIDGE_MANAGER = new BridgeManager(plugin));
         register(GAME_STATS_MANAGER = new GameStatsManager(plugin));
-        register(GLASS_MANAGER = new GlassManager());
+        register(GLASS_MANAGER = new GlassManager(plugin));
 
         register(ADDON_MANAGER = new AddonManager(plugin));
     }
