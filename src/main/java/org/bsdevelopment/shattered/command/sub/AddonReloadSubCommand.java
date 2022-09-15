@@ -13,6 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
+import java.util.List;
 
 @ICommand(name = "reloadAddon", usage = "[addon-name]", description = "Reloads all addons, or the specified addon")
 @Permission(permission = "reloadAddon", adminCommand = true)
@@ -20,11 +21,15 @@ public class AddonReloadSubCommand extends ShatteredSub {
 
     public AddonReloadSubCommand(Shattered shattered) {
         super(shattered);
+    }
 
-        registerCompletion(1, (commandSender, list, s) -> {
-            Management.ADDON_MANAGER.getAddonData().forEach(triple -> list.add(triple.left));
-            return true;
-        });
+    @Override
+    public List<String> handleCompletions(List<String> completions, CommandSender sender, int index, String[] args) {
+        if (!canExecute(sender)) return super.handleCompletions(completions, sender, index, args);
+        if ((index == 1)) {
+            Management.ADDON_MANAGER.getAddonData().forEach(triple -> completions.add(triple.left));
+        }
+        return super.handleCompletions(completions, sender, index, args);
     }
 
     @Override
