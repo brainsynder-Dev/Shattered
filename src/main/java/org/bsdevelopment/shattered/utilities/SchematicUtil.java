@@ -43,11 +43,11 @@ public class SchematicUtil {
         if (plugin.getDataStorage().hasKey("previous-map-region")) {
             currentRegion = new Cuboid (plugin.getDataStorage().getCompoundTag("previous-map-region"));
 
-            plugin.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.MESSAGE, "Clearing previously saved map region...");
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    resetRegion(() -> plugin.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.MESSAGE, "Map region has been cleared"));
+                    plugin.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "Clearing previously saved map region...");
+                    resetRegion(() -> plugin.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "Map region has been cleared"));
                 }
             }.runTaskLater(plugin, 30);
         }

@@ -85,6 +85,7 @@ public class AddonManager implements IManager {
                         ShatteredAddon addon = (ShatteredAddon) loadClass.getDeclaredConstructor().newInstance();
 
                         ADDON_DATA.add(new Triple<>(addon.getNamespace().namespace(), file, addon));
+                        PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "- Loaded addon: "+addon.getNamespace().namespace());
                         addon.initiate();
                         break;
                     }catch (NoSuchMethodException | InvocationTargetException e1) {
