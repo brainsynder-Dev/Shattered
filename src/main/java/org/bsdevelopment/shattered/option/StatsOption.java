@@ -39,4 +39,9 @@ public class StatsOption extends Option<Integer> {
         compound.setInteger("value", getValue());
         return compound;
     }
+
+    @Override
+    public String toString() {
+        return toCompound().toString();
+    }
 }

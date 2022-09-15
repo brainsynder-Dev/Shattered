@@ -66,6 +66,15 @@ public class GameStatsManager implements IManager {
     }
 
     /**
+     * > This function removes the statsOption from the STATS array
+     *
+     * @param statsOption The StatsOption object that you want to unregister.
+     */
+    public void unregister (StatsOption statsOption) {
+        STATS.remove(statsOption);
+    }
+
+    /**
      * Saves the current stats, then set all the stats back to 0.
      */
     public void resetStats () {
