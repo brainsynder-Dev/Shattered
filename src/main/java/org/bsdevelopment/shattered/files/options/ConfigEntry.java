@@ -12,17 +12,24 @@ public class ConfigEntry<T> {
     private final String path;
     private final String description;
 
+    private final List<T> LIMITS;
     private final List<String> PAST_PATHS;
 
     ConfigEntry(String path, T value, String description) {
         this.path = path;
         this.defaultValue = this.value = value;
         this.description = description;
+
+        LIMITS = new ArrayList<>();
         PAST_PATHS = new ArrayList<>();
     }
 
     ConfigEntry(String path, T value) {
         this (path, value, null);
+    }
+
+    public List<T> getLimits() {
+        return LIMITS;
     }
 
     public String getDescription() {
@@ -39,6 +46,11 @@ public class ConfigEntry<T> {
 
     ConfigEntry<T> setPastPaths (String... paths) {
         PAST_PATHS.addAll(Arrays.asList(paths));
+        return this;
+    }
+
+    ConfigEntry<T> setLimits (T... limits) {
+        LIMITS.addAll(Arrays.asList(limits));
         return this;
     }
 

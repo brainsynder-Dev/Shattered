@@ -2,127 +2,131 @@ package org.bsdevelopment.shattered.command.sub;
 
 import com.google.common.collect.Lists;
 import lib.brainsynder.commands.annotations.ICommand;
+import lib.brainsynder.utils.Cuboid;
 import org.bsdevelopment.shattered.Shattered;
 import org.bsdevelopment.shattered.command.ShatteredSub;
 import org.bsdevelopment.shattered.command.annotations.AdditionalUsage;
 import org.bsdevelopment.shattered.command.annotations.Permission;
 import org.bsdevelopment.shattered.managers.Management;
+import org.bsdevelopment.shattered.managers.list.ArenaManager;
 import org.bsdevelopment.shattered.utilities.Cooldown;
 import org.bsdevelopment.shattered.utilities.MessageType;
+import org.bsdevelopment.shattered.utilities.SchematicUtil;
+import org.bsdevelopment.shattered.utilities.ShatteredUtilities;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 @ICommand(name = "test")
-@AdditionalUsage(name = "mapgen", usage = "<schematic-file-name>", description = "Generates the selected map schematic as the arena location")
-@AdditionalUsage(name = "reset", description = "Resets the map based on the previous region")
-@Permission(permission = "test", adminCommand = true, additionalPermissions = {"mapgen", "reset"})
+@AdditionalUsage(name = "corners", description = "Highlights the corner of the current map region")
+@AdditionalUsage(name = "spawnpoints", usage = "<tries>", description = "Will generate spawn points around the map")
+@Permission(permission = "test", adminCommand = true, additionalPermissions = {"corners", "spawnpoints"})
 public class TestSubCommand extends ShatteredSub {
-    private final Cooldown COOLDOWN;
-
+    private final Cooldown LONG_COOLDOWN;
 
     public TestSubCommand(Shattered shattered) {
         super(shattered);
-        COOLDOWN = new Cooldown(5);
+        LONG_COOLDOWN = new Cooldown(30);
 
-        registerCompletion(1, Lists.newArrayList("mapgen", "reset"));
-        registerCompletion(2, (commandSender, list, s) -> {
-            if (s.equalsIgnoreCase("mapgen")) {
-                for (File file : shattered.getSchematicsFolder().listFiles()) {
-                    if ((!file.getName().endsWith(".schem")) && (!file.getName().endsWith(".schematic"))) continue;
-                    list.add(file.getName());
-                }
-                return true;
-            }
-
-            return false;
-        });
+        registerCompletion(1, Lists.newArrayList("corners", "spawnpoints"));
     }
 
     @Override
     public void run(CommandSender sender, String[] args) {
-        if (!sender.hasPermission(getPermission())) return;
-        String mapsCooldownKey = getClass().getSimpleName()+" - maps";
+        if (args.length == 0) {
+            sendUsage(sender);
+            return;
+        }
 
         if (!(sender instanceof Player player)) {
             getShattered().sendPrefixedMessage(sender, MessageType.ERROR, "Must be a player to run this command");
             return;
         }
 
-        if (args.length == 0) {
-            getShattered().sendPrefixedMessage(sender, MessageType.ERROR, "Invalid command usage");
-            sendUsage(sender);
-            return;
-        }
-
-        if (args[0].equalsIgnoreCase("mapgen") && sender.hasPermission(getPermission("mapgen"))) {
-            if (args.length == 1) {
-                getShattered().sendPrefixedMessage(sender, MessageType.ERROR, "Missing map file name");
-                return;
-            }
-
-            File schematicFile = new File(getShattered().getSchematicsFolder(), args[1]);
-
-            if (!schematicFile.exists()) {
-                getShattered().sendPrefixedMessage(sender, MessageType.ERROR, "Unable to find file named '" + args[1] + "'");
-                return;
-            }
-
-            if (COOLDOWN.hasCooldown(mapsCooldownKey, secondsLeft -> {
+        if (args[0].equalsIgnoreCase("corners")) {
+            if (LONG_COOLDOWN.hasCooldown(player.getName(), secondsLeft -> {
                 getShattered().sendPrefixedMessage(sender, MessageType.ERROR, "There is a cooldown on this command");
-                getShattered().sendPrefixedMessage(sender, MessageType.ERROR, "Time Left: " + MessageType.SHATTERED_GRAY +secondsLeft+"s");
+                getShattered().sendPrefixedMessage(sender, MessageType.ERROR, "Time Left: " + MessageType.SHATTERED_GRAY + secondsLeft + "s");
             })) return;
+            LONG_COOLDOWN.activateCooldown(player.getName());
 
-            COOLDOWN.activateCooldown(mapsCooldownKey);
+            SchematicUtil schematicUtil = getShattered().getSchematics();
 
+            Cuboid region = schematicUtil.getCurrentRegion();
 
-            long start = System.currentTimeMillis();
+            // Checking if the region is null.
+            if (region == null) {
+                getShattered().sendPrefixedMessage(sender, MessageType.ERROR, "There is no map currently generated.");
+                return;
+            }
 
-            getShattered().getSchematics().pasteSchematic(schematicFile, () -> {
-                long end = (System.currentTimeMillis() - start);
+            List<Location> sideLocations = new ArrayList<>();
+            List<Location> cornerLocations = new ArrayList<>();
+            // Looping through all the blocks in the region.
+            for (Block block : region.getBlocks()) {
+                int sides = 0;
 
-                getShattered().sendPrefixedMessage(sender, MessageType.MESSAGE, "Finished pasting: " + MessageType.SHATTERED_BLUE + args[1]);
-                getShattered().sendPrefixedMessage(sender, MessageType.MESSAGE, "Total Time (start -> finish): " + MessageType.SHATTERED_BLUE + formatTime(end));
+                // Checking if the block is on the edge of the region.
+                for (BlockFace face : Lists.newArrayList(BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN)) {
+                    if (!region.contains(block.getRelative(face))) sides++;
+                }
+
+                if (sides == 3) cornerLocations.add(block.getLocation());
+                if (sides == 2) sideLocations.add(block.getLocation());
+            }
+
+            // Highlighting the blocks that are on the edge of the region.
+            cornerLocations.forEach(location -> {
+                ShatteredUtilities.highlightBlock(ChatColor.DARK_BLUE, location, 1000*30, "Region Corner", getShattered(), player);
+            });
+            sideLocations.forEach(location -> {
+                ShatteredUtilities.highlightBlock(ChatColor.DARK_AQUA, location, 1000*30, "Region Edge", getShattered(), player);
             });
             return;
         }
+        if (args[0].equalsIgnoreCase("spawnpoints")) {
+            ArenaManager manager = Management.ARENA_MANAGER;
 
-        if (args[0].equalsIgnoreCase("reset") && sender.hasPermission(getPermission("reset"))) {
-            if (COOLDOWN.hasCooldown(mapsCooldownKey, secondsLeft -> {
-                getShattered().sendPrefixedMessage(sender, MessageType.ERROR, "There is a cooldown on this command");
-                getShattered().sendPrefixedMessage(sender, MessageType.ERROR, "Time Left: " + MessageType.SHATTERED_GRAY +secondsLeft+"s");
-            })) return;
+            if (manager.getRegion() == null) {
+                getShattered().sendPrefixedMessage(sender, MessageType.ERROR, "There is no map currently generated.");
+                return;
+            }
 
-            COOLDOWN.activateCooldown(mapsCooldownKey);
-            Management.GLASS_MANAGER.resetBlocks();
+            if (args.length == 1) {
+                sendUsage(sender);
+                return;
+            }
 
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    getShattered().getSchematics().resetRegion(() -> {
-                        getShattered().sendPrefixedMessage(sender, MessageType.MESSAGE, "Map has been reset.");
-                    });
+            try {
+                int tries = Integer.parseInt(args[1]);
+
+                if (tries > 200) {
+                    getShattered().sendPrefixedMessage(sender, MessageType.ERROR, "Too many tries, try a number below 200");
+                    return;
                 }
-            }.runTaskLater(getShattered(), 10);
-            return;
+
+                if (tries < 1) {
+                    getShattered().sendPrefixedMessage(sender, MessageType.ERROR, "Unable to locate any points with that number of tries");
+                    return;
+                }
+
+                for (int i = 0; i != tries; i++) {
+                    Location location = manager.getSpawnableBlocks().next();
+                    ShatteredUtilities.highlightBlock(ChatColor.RED, location.clone().add(0,1,0), 1000*30, "Random Spawn location: "+(i+1), getShattered(), player);
+                }
+                return;
+            }catch (NumberFormatException e) {
+                getShattered().sendPrefixedMessage(sender, MessageType.ERROR, "Oh no, '"+MessageType.SHATTERED_GRAY+args[1]+MessageType.SHATTERED_RED+"' does not looks like a number");
+                return;
+            }
         }
 
         sendUsage(sender);
-    }
-
-    public static String formatTime(long milliseconds) {
-        long time = milliseconds / 1000L;
-        long hours = (time / 60 / 60 % 24);
-        long minutes = (time / 60 % 60);
-        long seconds = (time % 60);
-
-        if (seconds <= 0) return milliseconds + "ms";
-        String formatted = "";
-        if (hours > 0) formatted += hours + "h ";
-        if (minutes > 0) formatted += minutes + "m ";
-        if (seconds > 0) formatted += seconds + "s ";
-        return formatted;
     }
 }

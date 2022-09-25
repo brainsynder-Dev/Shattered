@@ -46,6 +46,14 @@ public class Config extends ConfigFile {
                 Shattered.INSTANCE.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.ERROR, "Value of '" + key + "' can not be a '" + value.getClass().getSimpleName() + "' must be a '" + entry.getDefaultValue().getClass().getSimpleName() + "'" + ((entry.getExamples() != null) ? " Example(s): " + entry.getExamples() : ""));
                 value = entry.getDefaultValue();
             }
+
+            if (!entry.getLimits().isEmpty()) {
+                if (!entry.getLimits().contains(value)) {
+                    Shattered.INSTANCE.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.ERROR, "Value of '"+key+"' must be one of these values: "+entry.getLimits().toString());
+                    value = entry.getDefaultValue();
+                }
+            }
+
             // Store the configured value into the Entry
             entry.setValue(value, false);
         });

@@ -7,12 +7,11 @@ public enum ConfigOption {
     INSTANCE;
     private final Map<String, ConfigEntry> options = new LinkedHashMap<>();
 
-    public final ConfigEntry<Boolean> SIMPLER_GUI = createOption("Simpler-Pet-GUI-Command", false,
+    public final ConfigEntry<Integer> SPAWN_THRESHOLD = createOption("SpawnPoint.Block-Threshold", 3,
             """
-                    UGGGGGGGG This config option makes it so `/pet` opens the GUI (like `/pet gui`)
-                    Requires a server restart for some reason ¯\\_(ツ)_/¯
+                    How many blocks must be around the player in order for the location to be valid
                     
-                    Default: {default}""");
+                    Default: {default}""").setLimits(1, 2, 3, 4);
 
 
 

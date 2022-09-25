@@ -44,25 +44,7 @@ public class ShatteredSub extends SubCommand {
 
         Tellraw raw = Tellraw.fromLegacy(start);
 
-        AdditionalUsage[] additionalUsages = getAdditionalUsage(getClass());
-        if (additionalUsages.length != 0) {
-            String spacer = "§r ".repeat(("  [] /shattered "+command.name()).length() / 2);
-            raw.send(sender);
-            for (AdditionalUsage additional : additionalUsages) {
-                raw = Tellraw.getInstance(spacer);
-                raw.then(additional.name()).color(hex2Rgb("#c8cad0"));
-
-                // handles adding alias to the tooltip
-                List<String> tooltip = new ArrayList<>();
-                if (!additional.description().isEmpty())
-                    tooltip.add(ChatColor.GRAY + additional.description());
-
-                if (!tooltip.isEmpty()) raw.tooltip(tooltip);
-
-                parseUsage(additional.usage(), raw);
-                raw.send(sender);
-            }
-        } else {
+        {
             // handles adding alias to the tooltip
             List<String> tooltip = new ArrayList<>();
             if (!description.isEmpty())
@@ -81,6 +63,25 @@ public class ShatteredSub extends SubCommand {
 
             parseUsage(usage, raw);
             raw.send(sender);
+        }
+
+        AdditionalUsage[] additionalUsages = getAdditionalUsage(getClass());
+        if (additionalUsages.length != 0) {
+            String spacer = "§r ".repeat(("  [] /shattered "+command.name()).length() / 2);
+            for (AdditionalUsage additional : additionalUsages) {
+                raw = Tellraw.getInstance(spacer);
+                raw.then(additional.name()).color(hex2Rgb("#c8cad0"));
+
+                // handles adding alias to the tooltip
+                List<String> tooltip = new ArrayList<>();
+                if (!additional.description().isEmpty())
+                    tooltip.add(ChatColor.GRAY + additional.description());
+
+                if (!tooltip.isEmpty()) raw.tooltip(tooltip);
+
+                parseUsage(additional.usage(), raw);
+                raw.send(sender);
+            }
         }
     }
 
