@@ -44,11 +44,11 @@ public class GameStatsSubCommand extends ShatteredSub {
         }
 
         if (args[0].equalsIgnoreCase("previous")) {
-            outputStats(sender, Management.GAME_STATS_MANAGER.getCurrentStats());
+            outputStats(sender, Management.GAME_STATS_MANAGER.getPreviousStats());
             return;
         }
 
-        outputStats(sender, Management.GAME_STATS_MANAGER.getPreviousStats());
+        outputStats(sender, Management.GAME_STATS_MANAGER.getCurrentStats());
     }
 
     private void outputStats (CommandSender sender, StorageTagList list) {
