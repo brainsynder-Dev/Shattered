@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.bsdevelopment.shattered</groupId>
+        <artifactId>Shattered</artifactId>
+        <version>1</version>
+    </parent>
+
+    <artifactId>MAIN</artifactId>
+    <version>${module.version}</version>
+
+    <properties>
+        <module.info>-MAIN</module.info>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <minimizeJar>true</minimizeJar>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <shadedArtifactAttached>false</shadedArtifactAttached>
+                    <outputDirectory>/tmp</outputDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <relocations>
+                                <relocation>
+                                    <pattern>io.github.thatsmusic99.configurationmaster</pattern>
+                                    <shadedPattern>${parent.groupId}.internal.configmaster</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>lib.brainsynder</pattern>
+                                    <shadedPattern>${parent.groupId}.internal.bslib</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>fr.skytasul.glowingentities</pattern>
+                                    <shadedPattern>${parent.groupId}.internal.glowingentities</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>fr.mrmicky.fastboard</pattern>
+                                    <shadedPattern>${parent.groupId}.internal.fastboard</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>${parent.groupId}</groupId>
+            <artifactId>NMS_Master</artifactId>
+            <version>${module.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>lib.brainsynder</groupId>
+            <artifactId>API</artifactId>
+            <version>B108</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.thatsmusic99</groupId>
+            <artifactId>ConfigurationMaster-API</artifactId>
+            <version>v2.0.0-BETA-3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>fr.mrmicky</groupId>
+            <artifactId>fastboard</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+    </dependencies>
+</project>
