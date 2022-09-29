@@ -45,6 +45,8 @@ public abstract class GameMode {
      * This function is called when the game starts
      */
     public void start () {
+
+
         task = new BukkitRunnable() {
             @Override
             public void run() {

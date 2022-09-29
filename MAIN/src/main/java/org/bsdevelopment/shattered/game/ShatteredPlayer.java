@@ -16,6 +16,7 @@ public class ShatteredPlayer {
 
     private FastBoard fastBoard;
     private boolean spectating = false;
+    private boolean playing = false;
 
 
     // It's creating a new ShatteredPlayer object.
@@ -47,6 +48,12 @@ public class ShatteredPlayer {
         return compound;
     }
 
+    /**
+     * If the player is spectating, set their gamemode to spectator, clear their inventory, and teleport them to the center
+     * of the current region
+     *
+     * @param spectating Whether or not the player is spectating
+     */
     public void setSpectating(boolean spectating) {
         this.spectating = spectating;
 
@@ -58,16 +65,34 @@ public class ShatteredPlayer {
         });
     }
 
+    /**
+     * This function returns the name of the player.
+     *
+     * @return The name of the class.
+     */
     public String getName() {
         return NAME;
     }
 
+    /**
+     * This function returns the UUID of the player.
+     *
+     * @return The UUID of the user.
+     */
     public UUID getUuid() {
         return UUID;
     }
 
     public boolean isSpectating() {
         return spectating;
+    }
+
+    public boolean isPlaying() {
+        return playing;
+    }
+
+    public void setPlaying(boolean playing) {
+        this.playing = playing;
     }
 
     /**
@@ -106,5 +131,10 @@ public class ShatteredPlayer {
         getOrCreateBoard(FastBoard::delete);
 
         fastBoard = null;
+    }
+
+    @Override
+    public String toString() {
+        return toCompound().toString();
     }
 }
