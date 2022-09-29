@@ -2,13 +2,13 @@ package org.bsdevelopment.shattered.game.modes.list;
 
 import org.bsdevelopment.shattered.Shattered;
 import org.bsdevelopment.shattered.game.GameModeData;
-import org.bsdevelopment.shattered.game.modes.GameMode;
+import org.bsdevelopment.shattered.game.modes.ShatteredGameMode;
 
 @GameModeData (
         name = "FFA",
         description = ""
 )
-public class FFAGameMode extends GameMode {
+public class FFAGameMode extends ShatteredGameMode {
     public FFAGameMode(Shattered plugin) {
         super(plugin);
     }

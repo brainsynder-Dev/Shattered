@@ -5,7 +5,7 @@ import org.bsdevelopment.shattered.api.ShatteredAddon;
 import org.bsdevelopment.shattered.events.core.GamemodeRegisterEvent;
 import org.bsdevelopment.shattered.game.GameState;
 import org.bsdevelopment.shattered.game.ShatteredPlayer;
-import org.bsdevelopment.shattered.game.modes.GameMode;
+import org.bsdevelopment.shattered.game.modes.ShatteredGameMode;
 import org.bsdevelopment.shattered.game.modes.list.FFAGameMode;
 import org.bsdevelopment.shattered.managers.IManager;
 import org.bsdevelopment.shattered.managers.Management;
@@ -21,13 +21,13 @@ import java.util.*;
 
 public class GameManager implements IManager {
     private final Shattered PLUGIN;
-    private final RandomCollection<GameMode> RANDOM_GAMEMODES;
-    private final Map<String, LinkedList<GameMode>> GAMEMODES_MAP;
+    private final RandomCollection<ShatteredGameMode> RANDOM_GAMEMODES;
+    private final Map<String, LinkedList<ShatteredGameMode>> GAMEMODES_MAP;
     private final PluginManager PLUGIN_MANAGER;
     private final List<ShatteredPlayer> PLAYERS;
 
     private GameState state = GameState.WAITING;
-    private GameMode currentGamemode = null;
+    private ShatteredGameMode currentGamemode = null;
 
     public GameManager(Shattered plugin) {
         PLUGIN = plugin;
@@ -48,7 +48,7 @@ public class GameManager implements IManager {
     public void cleanup() {
         currentGamemode = null;
 
-        GAMEMODES_MAP.values().forEach(gamemodes -> gamemodes.forEach(GameMode::cleanup));
+        GAMEMODES_MAP.values().forEach(gamemodes -> gamemodes.forEach(ShatteredGameMode::cleanup));
         GAMEMODES_MAP.clear();
     }
 
@@ -93,7 +93,7 @@ public class GameManager implements IManager {
      * @param addon The addon that is registering the gamemode.
      * @param gameMode The gamemode to register.
      */
-    public void registerGamemode (ShatteredAddon addon, GameMode gameMode) {
+    public void registerGamemode (ShatteredAddon addon, ShatteredGameMode gameMode) {
         registerGamemode0(addon.getNamespace().namespace(), gameMode, GamemodeRegisterEvent.Type.ADDON);
         Shattered.INSTANCE.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "Registered gamemode '"+MessageType.SHATTERED_GREEN+gameMode.getGameModeData().name()+MessageType.SHATTERED_GRAY+"' from the addon: "+MessageType.SHATTERED_GREEN+addon.getNamespace().namespace());
     }
@@ -104,7 +104,7 @@ public class GameManager implements IManager {
      * @param plugin The plugin that registered the gamemode.
      * @param gameMode The gamemode to register
      */
-    private void registerGamemode (Plugin plugin, GameMode gameMode) {
+    private void registerGamemode (Plugin plugin, ShatteredGameMode gameMode) {
         registerGamemode0(plugin.getDescription().getName(), gameMode, GamemodeRegisterEvent.Type.PLUGIN);
 
         if (gameMode instanceof Listener listener) PLUGIN_MANAGER.registerEvents(listener, plugin);
@@ -117,8 +117,8 @@ public class GameManager implements IManager {
      * @param gameMode The GameMode to register
      * @param type The type of gamemode.
      */
-    private void registerGamemode0 (String key, GameMode gameMode, GamemodeRegisterEvent.Type type) {
-        LinkedList<GameMode> list = GAMEMODES_MAP.getOrDefault(key, new LinkedList<>());
+    private void registerGamemode0 (String key, ShatteredGameMode gameMode, GamemodeRegisterEvent.Type type) {
+        LinkedList<ShatteredGameMode> list = GAMEMODES_MAP.getOrDefault(key, new LinkedList<>());
         list.addLast(gameMode);
         RANDOM_GAMEMODES.add(gameMode);
 

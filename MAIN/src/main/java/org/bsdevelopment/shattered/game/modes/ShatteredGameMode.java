@@ -12,11 +12,11 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public abstract class GameMode {
+public abstract class ShatteredGameMode {
     private final Shattered PLUGIN;
     private BukkitRunnable task;
 
-    public GameMode(Shattered plugin) {
+    public ShatteredGameMode(Shattered plugin) {
         PLUGIN = plugin;
     }
 
