@@ -7,6 +7,7 @@ import org.bsdevelopment.shattered.bow.annotations.UnbreakableGlass;
 import org.bsdevelopment.shattered.bow.data.BowForce;
 import org.bsdevelopment.shattered.bow.data.BowInfo;
 import org.bsdevelopment.shattered.bow.tasks.*;
+import org.bsdevelopment.shattered.game.modes.ShatteredGameMode;
 import org.bsdevelopment.shattered.managers.Management;
 import org.bsdevelopment.shattered.utilities.BowInfoPersistentData;
 import org.bsdevelopment.shattered.utilities.ShatteredUtilities;
@@ -123,8 +124,9 @@ public class BowArrowListener implements Listener {
         Block block = event.getHitBlock();
         if (block == null) return;
 
-        // TODO: Add a method from the Gamemode class to handle when an arrow
-        // Hits a block... eg: FruitBuster Gamemode, where the arrow hits a skull
+        // TODO: Maybe add a BlockDegradation class to list how many times a block has degraded...
+        ShatteredGameMode gameMode = Management.GAME_MANAGER.getCurrentGamemode();
+        if (gameMode != null) gameMode.onArrowHitBlock(info, block);
         Management.GLASS_MANAGER.handleGlass(block);
     }
 
