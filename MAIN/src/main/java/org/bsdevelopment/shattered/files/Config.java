@@ -21,9 +21,11 @@ public class Config extends ConfigFile {
             if (entry.getDescription() == null) {
                 addDefault(key, entry.getDefaultValue());
             } else {
-                addDefault(key, entry.getDefaultValue(), entry.getDescription()
-                        .replace("{default}", String.valueOf(entry.getDefaultValue())) // Replace the {default} placeholder with what the default value is
-                );
+                String description = entry.getDescription();
+                if (!entry.getLimits().isEmpty()) description = description.replace("{default}", "{default}  (Allowed values: "+entry.getLimits().toString().replace("[", "").replace("]", "")+" )");
+                description = description.replace("{default}", String.valueOf(entry.getDefaultValue()));
+
+                addDefault(key, entry.getDefaultValue(), description); // Replace the {default} placeholder with what the default value is
             }
 
             // Moves all the old keys to the new key

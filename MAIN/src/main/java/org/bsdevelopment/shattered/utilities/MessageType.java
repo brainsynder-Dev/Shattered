@@ -1,6 +1,7 @@
 package org.bsdevelopment.shattered.utilities;
 
 public enum MessageType {
+    TIMING ("&#be4fe3[&#cc9be4Shattered Timing&#be4fe3] &#cfc8d0"),
     DEBUG ("&#4fe371[&#9be4aeShattered Debug&#4fe371] &#c8cad0"),
 
     MESSAGE ("&#5676D7[&#8FA5E5Shattered&#5676D7] &#c8cad0"),

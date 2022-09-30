@@ -64,7 +64,11 @@ public class ConfigEntry<T> {
     }
 
     public T getValue() {
-        if (value == null) return defaultValue;
+        return getValue(defaultValue);
+    }
+
+    public T getValue(T fallback) {
+        if (value == null) return fallback;
         return value;
     }
 

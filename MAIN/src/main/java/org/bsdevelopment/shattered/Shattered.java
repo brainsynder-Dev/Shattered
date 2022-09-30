@@ -5,6 +5,7 @@ import lib.brainsynder.utils.Colorize;
 import org.bsdevelopment.shattered.command.ShatteredCommand;
 import org.bsdevelopment.shattered.files.Config;
 import org.bsdevelopment.shattered.files.DataStorage;
+import org.bsdevelopment.shattered.files.options.ConfigOption;
 import org.bsdevelopment.shattered.listeners.BowArrowListener;
 import org.bsdevelopment.shattered.managers.Management;
 import org.bsdevelopment.shattered.utilities.MessageType;
@@ -96,6 +97,10 @@ public class Shattered extends JavaPlugin {
     }
 
     public void sendPrefixedMessage (CommandSender sender, MessageType messageType, String message) {
+        if (sender.getName().equals("CONSOLE")) {
+            if ((messageType == MessageType.TIMING) && (!ConfigOption.INSTANCE.MESSAGING_TYPE_TIMING.getValue())) return;
+            if ((messageType == MessageType.DEBUG) && (!ConfigOption.INSTANCE.MESSAGING_TYPE_DEBUG.getValue())) return;
+        }
         sender.sendMessage(Colorize.translateBungeeHex(messageType.getPrefix()+message));
     }
 
