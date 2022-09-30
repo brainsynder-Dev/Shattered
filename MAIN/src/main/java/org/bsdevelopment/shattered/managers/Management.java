@@ -2,6 +2,8 @@ package org.bsdevelopment.shattered.managers;
 
 import org.bsdevelopment.shattered.Shattered;
 import org.bsdevelopment.shattered.managers.list.*;
+import org.bsdevelopment.shattered.utilities.MessageType;
+import org.bukkit.Bukkit;
 
 import java.util.LinkedList;
 
@@ -15,6 +17,7 @@ public class Management {
     public static GameManager GAME_MANAGER;
     public static GameStatsManager GAME_STATS_MANAGER;
     public static GlassManager GLASS_MANAGER;
+    public static PlayerManager PLAYER_MANAGER;
     public static AddonManager ADDON_MANAGER;
 
     static {
@@ -29,14 +32,16 @@ public class Management {
         register(GAME_MANAGER = new GameManager(plugin));
         register(GAME_STATS_MANAGER = new GameStatsManager(plugin));
         register(GLASS_MANAGER = new GlassManager(plugin));
+        register(PLAYER_MANAGER = new PlayerManager(plugin));
 
         register(ADDON_MANAGER = new AddonManager(plugin));
     }
 
     private static void register (IManager manager) {
         MANAGER_LIST.addLast(manager);
-
+        long start = System.currentTimeMillis();
         manager.load();
+        Shattered.INSTANCE.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.TIMING, "  + The "+manager.getClass().getSimpleName()+" took "+(System.currentTimeMillis() - start)+"ms to load.");
     }
 
     public static void cleanup () {
