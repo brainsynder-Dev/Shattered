@@ -16,6 +16,23 @@ public enum ConfigOption {
                     
                     Default: {default}""");
 
+    public final ConfigEntry<Boolean> SETUP_CHECK = createOption("check-setup-on-startup", false,
+            """
+                    Should the plugin check if it is setup and ready to go?
+                    This can be run when the plugin starts (if enabled here) or via '/shattered checkup'
+                    
+                    Default: {default}""");
+
+    public final ConfigEntry<Boolean> BUNGEE_MODE = createOption("bungee-mode", false,
+            """
+                    This option is mostly used if the plugin is on its own server it will do the following:
+                    - Will be put in the lobby when they join the server
+                    - Disables the join/leave commands
+                    
+                    NEEDS A RESTART TO TAKE EFFECT
+                    
+                    Default: {default}""");
+
     public final ConfigEntry<Integer> COUNTDOWN_TIME = createOption("countdown-starting-number", 40,
             """
                     This is the number the countdown timer will start from when preparing to start the game.

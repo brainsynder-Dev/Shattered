@@ -17,6 +17,7 @@ public class Management {
     public static GameManager GAME_MANAGER;
     public static GameStatsManager GAME_STATS_MANAGER;
     public static GlassManager GLASS_MANAGER;
+    public static LobbyManager LOBBY_MANAGER;
     public static PlayerManager PLAYER_MANAGER;
     public static AddonManager ADDON_MANAGER;
 
@@ -32,6 +33,7 @@ public class Management {
         register(GAME_MANAGER = new GameManager(plugin));
         register(GAME_STATS_MANAGER = new GameStatsManager(plugin));
         register(GLASS_MANAGER = new GlassManager(plugin));
+        register(LOBBY_MANAGER = new LobbyManager(plugin));
         register(PLAYER_MANAGER = new PlayerManager(plugin));
 
         register(ADDON_MANAGER = new AddonManager(plugin));

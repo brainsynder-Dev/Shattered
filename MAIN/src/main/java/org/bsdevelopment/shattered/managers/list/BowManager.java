@@ -53,7 +53,7 @@ public class BowManager implements IManager {
 
     public void registerBow (ShatteredAddon addon, ShatteredBow bow) {
         registerBow0(addon.getNamespace().namespace(), bow);
-        Shattered.INSTANCE.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "Registered bow '"+MessageType.SHATTERED_GREEN+bow.fetchBowData().name()+MessageType.SHATTERED_GRAY+"' from the addon: "+MessageType.SHATTERED_GREEN+addon.getNamespace().namespace());
+        Shattered.INSTANCE.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "  Registered bow '"+MessageType.SHATTERED_GREEN+bow.fetchBowData().name()+MessageType.SHATTERED_GRAY+"' from the addon: "+MessageType.SHATTERED_GREEN+addon.getNamespace().namespace());
     }
 
     private void registerBow (Plugin plugin, ShatteredBow bow) {

@@ -1,4 +1,4 @@
-package org.bsdevelopment.shattered.command.sub;
+package org.bsdevelopment.shattered.command.sub.admin;
 
 import com.google.common.collect.Lists;
 import lib.brainsynder.commands.annotations.ICommand;

@@ -1,4 +1,4 @@
-package org.bsdevelopment.shattered.command.sub;
+package org.bsdevelopment.shattered.command.sub.user;
 
 import lib.brainsynder.commands.annotations.ICommand;
 import lib.brainsynder.nbt.StorageTagCompound;

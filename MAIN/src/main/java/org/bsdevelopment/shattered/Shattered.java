@@ -10,12 +10,15 @@ import org.bsdevelopment.shattered.listeners.BowArrowListener;
 import org.bsdevelopment.shattered.managers.Management;
 import org.bsdevelopment.shattered.utilities.MessageType;
 import org.bsdevelopment.shattered.utilities.SchematicUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 public class Shattered extends JavaPlugin {
     public static Shattered INSTANCE;
@@ -52,12 +55,19 @@ public class Shattered extends JavaPlugin {
 
         registerListeners();
 
-        CommandRegistry<Shattered> registry = new CommandRegistry<> (this);
+        CommandRegistry<Shattered> registry = new CommandRegistry<>(this);
         try {
             registry.register(new ShatteredCommand(this));
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                runSetupCheck(Bukkit.getConsoleSender());
+            }
+        }.runTaskLater(this, 20);
     }
 
     @Override
@@ -71,12 +81,12 @@ public class Shattered extends JavaPlugin {
         dataStorage = null;
     }
 
-    private void registerListeners () {
+    private void registerListeners() {
         PluginManager manager = getServer().getPluginManager();
         manager.registerEvents(new BowArrowListener(this), this);
     }
 
-    public void reload () {
+    public void reload() {
         SCHEMATICS = new SchematicUtil(dataStorage.getLocation("arena-location", null), this);
     }
 
@@ -96,15 +106,50 @@ public class Shattered extends JavaPlugin {
         return dataStorage;
     }
 
-    public void sendPrefixedMessage (CommandSender sender, MessageType messageType, String message) {
+    public void sendPrefixedMessage(CommandSender sender, MessageType messageType, String message) {
         if (sender.getName().equals("CONSOLE")) {
-            if ((messageType == MessageType.TIMING) && (!ConfigOption.INSTANCE.MESSAGING_TYPE_TIMING.getValue())) return;
+            if ((messageType == MessageType.TIMING) && (!ConfigOption.INSTANCE.MESSAGING_TYPE_TIMING.getValue()))
+                return;
             if ((messageType == MessageType.DEBUG) && (!ConfigOption.INSTANCE.MESSAGING_TYPE_DEBUG.getValue())) return;
         }
-        sender.sendMessage(Colorize.translateBungeeHex(messageType.getPrefix()+message));
+        sender.sendMessage(Colorize.translateBungeeHex(messageType.getPrefix() + message));
     }
 
     public Config getConfiguration() {
         return configuration;
+    }
+
+
+    // TODO: Add more system checks to make sure everything is setup correctly...
+    public void runSetupCheck(CommandSender sender) {
+        sender.sendMessage(" ");
+        sendPrefixedMessage(sender, MessageType.NO_PREFIX, "Shattered Checks: ");
+
+        // Arena/Maps
+        formatCheck(sender, (Objects.requireNonNull(SCHEMATICS_FOLDER.listFiles()).length != 0),
+                "Map Schematics (WorldEdit schematic map files)", false);
+        formatCheck(sender, (dataStorage.getLocation("arena-location", null) != null),
+                "Arena Location (/shattered setMapRegion)", false);
+
+        // Lobby
+        boolean lobbyCheck = (Management.LOBBY_MANAGER != null);
+        formatCheck(sender, lobbyCheck, "Lobby Manager", false);
+        if (lobbyCheck) {
+            formatCheck(sender, (Management.LOBBY_MANAGER.getLobbySpawn() != null),
+                    "Lobby Spawn Location (/shattered lobby lobbyspawn)", true);
+            formatCheck(sender, (Management.LOBBY_MANAGER.getReadyCube1() != null),
+                    "Lobby Ready Cube 1 (/shattered lobby readycube1)", true);
+            formatCheck(sender, (Management.LOBBY_MANAGER.getReadyCube2() != null),
+                    "Lobby Ready Cube 2 (/shattered lobby readycube2)", true);
+        }
+
+        sender.sendMessage(" ");
+    }
+
+    private void formatCheck (CommandSender sender, boolean check, String label, boolean spacing) {
+        String good = MessageType.SHATTERED_GREEN + "☑  " + MessageType.SHATTERED_GRAY;
+        String missing = MessageType.SHATTERED_RED + "☐  " + MessageType.SHATTERED_GRAY;
+
+        sendPrefixedMessage(sender, MessageType.NO_PREFIX, (spacing ? "   " : "") + (check ? good : missing) + label);
     }
 }

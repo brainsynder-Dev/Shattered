@@ -6,7 +6,11 @@ import lib.brainsynder.commands.annotations.ICommand;
 import lib.brainsynder.utils.Colorize;
 import org.bsdevelopment.shattered.Shattered;
 import org.bsdevelopment.shattered.command.annotations.Permission;
-import org.bsdevelopment.shattered.command.sub.*;
+import org.bsdevelopment.shattered.command.sub.admin.*;
+import org.bsdevelopment.shattered.command.sub.user.GameStatsSubCommand;
+import org.bsdevelopment.shattered.command.sub.user.JoinSubCommand;
+import org.bsdevelopment.shattered.command.sub.user.LeaveSubCommand;
+import org.bsdevelopment.shattered.files.options.ConfigOption;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -17,15 +21,24 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ShatteredCommand extends ParentCommand<ShatteredSub> {
 
     public ShatteredCommand(Shattered shattered) {
+        // User Commands
         registerSub(new GameStatsSubCommand(shattered));
 
+        if (!ConfigOption.INSTANCE.BUNGEE_MODE.getValue()) {
+            registerSub(new JoinSubCommand(shattered));
+            registerSub(new LeaveSubCommand(shattered));
+        }
+
+        // Admin Commands
         registerSub(new AddonReloadSubCommand(shattered));
         registerSub(new ArenaLocationSubCommand(shattered));
         registerSub(new BowsSubCommand(shattered));
         registerSub(new BridgeSubCommand(shattered));
+        registerSub(new CheckupSubCommand(shattered));
+        registerSub(new LobbySubCommand(shattered));
         registerSub(new MapSubCommand(shattered));
         registerSub(new ReloadSubCommand(shattered));
-        registerSub(new TestSubCommand(shattered));
+        registerSub(new AdminSubCommand(shattered));
 
 //        registerSub(new StartSubCommand(gameManager));
 //        registerSub(new EndSubCommand(gameManager));
