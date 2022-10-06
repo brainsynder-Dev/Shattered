@@ -1,5 +1,6 @@
 package org.bsdevelopment.shattered.managers.list;
 
+import lib.brainsynder.storage.RandomCollection;
 import org.bsdevelopment.shattered.Shattered;
 import org.bsdevelopment.shattered.api.ShatteredAddon;
 import org.bsdevelopment.shattered.bow.ShatteredBow;
@@ -104,5 +105,18 @@ public class BowManager implements IManager {
         LinkedList<ShatteredBow> bows = new LinkedList<>();
         BOWS_MAP.forEach((plugin, shatteredBows) -> shatteredBows.forEach(bows::addLast));
         return bows;
+    }
+
+    public ShatteredBow getRandomBow () {
+        RandomCollection<ShatteredBow> collection = new RandomCollection<>();
+        for (ShatteredBow bow : getBows()) {
+            if (bow instanceof StarterBow) continue;
+            if (!bow.isEnabled()) continue;
+
+            collection.add(bow.fetchBowData().spawnChance(), bow);
+        }
+
+        if (collection.isEmpty()) return null;
+        return collection.next();
     }
 }

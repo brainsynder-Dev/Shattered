@@ -15,6 +15,7 @@ public class ShatteredPlayer {
     private final String NAME;
 
     private FastBoard fastBoard;
+    private PlayerState state = PlayerState.UNKNOWN;
     private boolean spectating = false;
     private boolean playing = false;
 
@@ -60,9 +61,21 @@ public class ShatteredPlayer {
         fetchPlayer(player -> {
             player.setGameMode(spectating ? GameMode.SPECTATOR : GameMode.ADVENTURE);
             player.getInventory().clear();
+            player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
 
-            if (spectating) player.teleport(Shattered.INSTANCE.getSchematics().getCurrentRegion().getCenter());
+            if (spectating) {
+                setState(PlayerState.SPECTATING_GAME);
+                player.teleport(Shattered.INSTANCE.getSchematics().getCurrentRegion().getCenter());
+            }
         });
+    }
+
+    public void setState(PlayerState state) {
+        this.state = state;
+    }
+
+    public PlayerState getState() {
+        return state;
     }
 
     /**
@@ -131,6 +144,33 @@ public class ShatteredPlayer {
         getOrCreateBoard(FastBoard::delete);
 
         fastBoard = null;
+    }
+
+    public enum PlayerState {
+        // If the player is not in the lobby or a game it will be this state
+        UNKNOWN,
+
+        // If the player is in the lobby of Shattered it will be this state
+        LOBBY,
+
+        // If the player is currently in a Shattered game it will be this state
+        IN_GAME (LOBBY),
+
+        // If the player is currently spectating a Shattered game it will be this state
+        SPECTATING_GAME (LOBBY);
+
+        private final PlayerState masterState;
+
+        PlayerState () {
+            this.masterState = this;
+        }
+        PlayerState (PlayerState masterState) {
+            this.masterState = masterState;
+        }
+
+        public PlayerState getMasterState() {
+            return masterState;
+        }
     }
 
     @Override

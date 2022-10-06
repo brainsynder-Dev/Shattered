@@ -7,6 +7,7 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
+import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -21,11 +22,13 @@ import org.bsdevelopment.shattered.Shattered;
 import org.bsdevelopment.shattered.managers.Management;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -54,6 +57,21 @@ public class SchematicUtil {
         }
     }
 
+    public File getRandomMap () {
+        RandomCollection<File> collection = new RandomCollection<>();
+
+        if ((PLUGIN.getSchematicsFolder() == null) || (Objects.requireNonNull(PLUGIN.getSchematicsFolder().listFiles()).length == 0))
+            throw new NullPointerException("No maps were located in the maps folder");
+        for (File file : Objects.requireNonNull(PLUGIN.getSchematicsFolder().listFiles())) {
+            ClipboardFormat format = ClipboardFormats.findByFile(file);
+            if (format == null) continue;
+            if (!format.isFormat(file)) continue;
+            collection.add(file);
+        }
+
+        return collection.next();
+    }
+
     public Cuboid getCurrentRegion() {
         return currentRegion;
     }
@@ -61,6 +79,49 @@ public class SchematicUtil {
     private void saveRegion () {
         PLUGIN.getDataStorage().setTag("previous-map-region", currentRegion.serialize());
         PLUGIN.getDataStorage().save();
+    }
+
+    public void setBlocks (List<Location> locations, Material material, Runnable runnable) {
+        if (locations.isEmpty()) return;
+        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(locations.get(0).getWorld());
+
+        CompletableFuture.runAsync(() -> {
+            try (EditSession editSession = WorldEdit.getInstance().newEditSessionBuilder().world(world).maxBlocks(-1).build()) {
+                for (Location location : locations) {
+                    int x = location.getBlockX();
+                    int y = location.getBlockY();
+                    int z = location.getBlockZ();
+
+                    editSession.setBlock(x, y, z, Objects.requireNonNull(BlockTypes.parse(material.name())).getDefaultState());
+                }
+            } finally {
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        runnable.run();
+                    }
+                }.runTask(PLUGIN);
+            }
+        });
+    }
+
+    public void replaceBlocks (Cuboid cuboid, Material fromMaterial, Material toMaterial, Runnable runnable) {
+        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(cuboid.getWorld());
+
+        CompletableFuture.runAsync(() -> {
+            try (EditSession editSession = WorldEdit.getInstance().newEditSessionBuilder().world(world).maxBlocks(-1).build()) {
+                editSession.setMask(new BlockMask (editSession.extent).add(BlockTypes.parse(fromMaterial.name())));
+
+                editSession.setBlocks(fromCuboid(cuboid), Objects.requireNonNull(BlockTypes.parse(toMaterial.name())).getDefaultState());
+            } finally {
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        runnable.run();
+                    }
+                }.runTask(PLUGIN);
+            }
+        });
     }
 
     public void resetRegion (Runnable runnable){

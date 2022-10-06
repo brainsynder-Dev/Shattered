@@ -2,21 +2,28 @@ package org.bsdevelopment.shattered.managers.list;
 
 import org.bsdevelopment.shattered.Shattered;
 import org.bsdevelopment.shattered.api.ShatteredAddon;
+import org.bsdevelopment.shattered.bow.list.StarterBow;
 import org.bsdevelopment.shattered.events.core.GamemodeRegisterEvent;
+import org.bsdevelopment.shattered.game.GameModeData;
 import org.bsdevelopment.shattered.game.GameState;
 import org.bsdevelopment.shattered.game.ShatteredPlayer;
 import org.bsdevelopment.shattered.game.modes.ShatteredGameMode;
 import org.bsdevelopment.shattered.game.modes.list.FFAGameMode;
 import org.bsdevelopment.shattered.managers.IManager;
 import org.bsdevelopment.shattered.managers.Management;
+import org.bsdevelopment.shattered.utilities.GameCountdownTask;
 import org.bsdevelopment.shattered.utilities.MessageType;
 import org.bsdevelopment.shattered.utilities.RandomCollection;
 import org.bsdevelopment.shattered.utilities.ShatteredUtilities;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
+import java.io.File;
 import java.util.*;
 
 public class GameManager implements IManager {
@@ -28,6 +35,7 @@ public class GameManager implements IManager {
 
     private GameState state = GameState.WAITING;
     private ShatteredGameMode currentGamemode = null;
+    private GameCountdownTask gameCountdownTask = null;
 
     public GameManager(Shattered plugin) {
         PLUGIN = plugin;
@@ -50,26 +58,53 @@ public class GameManager implements IManager {
 
         GAMEMODES_MAP.values().forEach(gamemodes -> gamemodes.forEach(ShatteredGameMode::cleanup));
         GAMEMODES_MAP.clear();
+
+        RANDOM_GAMEMODES.clear();
+
+        PLAYERS.clear();
+    }
+
+    public GameState getState() {
+        return state;
     }
 
     public List<ShatteredPlayer> getCurrentPlayers() {
         return PLAYERS;
     }
 
-    public void joinGame (ShatteredPlayer player) {
-        // Checking if the player is already playing in the game.
-        if (player.isPlaying()) return;
-        // It sets the player to playing.
-        player.setPlaying(true);
-        // It adds the player to the list of players.
-        PLAYERS.add(player);
+    public ShatteredGameMode getCurrentGamemode() {
+        return currentGamemode;
     }
 
-    public void leaveGame (ShatteredPlayer player) {
+    public void joinGame (ShatteredPlayer shatteredPlayer, Reason reason) {
+        // Checking if the player is already playing in the game.
+        if (shatteredPlayer.isPlaying() || (PLAYERS.contains(shatteredPlayer))) return;
+        // It adds the player to the list of players.
+        PLAYERS.add(shatteredPlayer);
+        shatteredPlayer.setState(ShatteredPlayer.PlayerState.LOBBY);
+
+        if (reason == Reason.COMMAND) {
+            // TODO: Store player data
+            Management.LOBBY_MANAGER.joinLobby(shatteredPlayer);
+        }
+    }
+
+    public void leaveGame (ShatteredPlayer player, Reason reason) {
+        if (currentGamemode != null) currentGamemode.disqualifyPlayer(player);
+
         // It sets the player to not playing.
         player.setPlaying(false);
+        // It removes the scoreboard from the player.
+        player.removeBoard();
         // It removes the player from the list of players.
         PLAYERS.remove(player);
+
+        if (reason == Reason.COMMAND) {
+            // TODO: Re-store player data
+            player.setState(ShatteredPlayer.PlayerState.UNKNOWN);
+            return;
+        }
+        Management.LOBBY_MANAGER.joinLobby(player);
     }
 
     public void setState(GameState state) {
@@ -81,9 +116,56 @@ public class GameManager implements IManager {
             case COUNTDOWN:
                 if (currentGamemode == null) currentGamemode = RANDOM_GAMEMODES.next();
 
+                gameCountdownTask = new GameCountdownTask(PLUGIN, currentGamemode);
+
+                if (PLUGIN.getSchematics().getCurrentRegion() == null) {
+                    File mapSchematic = PLUGIN.getSchematics().getRandomMap();
+                    PLUGIN.getSchematics().pasteSchematic(mapSchematic, () -> {
+                        gameCountdownTask.runTaskTimer(PLUGIN, 0, 20);
+                    });
+                }else{
+                    gameCountdownTask.runTaskTimer(PLUGIN, 0, 20);
+                }
                 break;
-            case IN_GAME: break;
-            case CLEANUP: break;
+            case IN_GAME:
+                gameCountdownTask = null;
+
+                currentGamemode.start();
+
+                Management.GAME_STATS_MANAGER.resetStats();
+
+                PLAYERS.forEach(shatteredPlayer -> {
+                    shatteredPlayer.setPlaying(true);
+                    shatteredPlayer.setState(ShatteredPlayer.PlayerState.IN_GAME);
+                    shatteredPlayer.fetchPlayer(player -> {
+                        player.setGameMode(GameMode.ADVENTURE);
+                        player.getInventory().setItem(17, new ItemStack(Material.ARROW));
+                        player.getInventory().addItem(Management.BOW_MANAGER.getBow(StarterBow.class).getItem());
+
+                        player.teleport(currentGamemode.getSpawnLocation(shatteredPlayer));
+                    });
+                });
+                break;
+            case CLEANUP: {
+                gameCountdownTask = null;
+
+                if (currentGamemode != null) {
+                    currentGamemode.onEnd();
+
+                    currentGamemode = null;
+                }
+
+                PLAYERS.forEach(shatteredPlayer -> {
+                    shatteredPlayer.removeBoard();
+
+                    Management.LOBBY_MANAGER.joinLobby(shatteredPlayer);
+                });
+
+                Management.GLASS_MANAGER.resetBlocks();
+                PLUGIN.getSchematics().resetRegion(() -> setState(GameState.WAITING));
+
+                break;
+            }
         }
     }
 
@@ -121,9 +203,30 @@ public class GameManager implements IManager {
         LinkedList<ShatteredGameMode> list = GAMEMODES_MAP.getOrDefault(key, new LinkedList<>());
         list.addLast(gameMode);
         RANDOM_GAMEMODES.add(gameMode);
-
         GAMEMODES_MAP.put(key, list);
 
+        gameMode.initiate();
+
         ShatteredUtilities.fireShatteredEvent(new GamemodeRegisterEvent(new GamemodeRegisterEvent.Culprit(type, key), gameMode));
+    }
+
+    public ShatteredGameMode getGameMode (Class<?> gamemodeClass) {
+        for (ShatteredGameMode gameMode : RANDOM_GAMEMODES.values()) {
+            if (gameMode.getClass().getCanonicalName().equals(gamemodeClass.getCanonicalName())) return gameMode;
+        }
+        return null;
+    }
+
+    public ShatteredGameMode getGameMode (String gamemodeName) {
+        for (ShatteredGameMode gameMode : RANDOM_GAMEMODES.values()) {
+            GameModeData data = gameMode.getGameModeData();
+            if (data.name().equals(gamemodeName)) return gameMode;
+        }
+        return null;
+    }
+
+    public enum Reason {
+        COMMAND,
+        LOGIN_OR_OUT
     }
 }

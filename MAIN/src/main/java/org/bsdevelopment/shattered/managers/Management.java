@@ -15,6 +15,7 @@ public class Management {
     public static BowManager BOW_MANAGER;
     public static BridgeManager BRIDGE_MANAGER;
     public static GameManager GAME_MANAGER;
+    public static GameOptionsManager GAME_OPTIONS_MANAGER;
     public static GameStatsManager GAME_STATS_MANAGER;
     public static GlassManager GLASS_MANAGER;
     public static LobbyManager LOBBY_MANAGER;
@@ -30,6 +31,7 @@ public class Management {
         register(ARENA_MANAGER = new ArenaManager());
         register(BOW_MANAGER = new BowManager());
         register(BRIDGE_MANAGER = new BridgeManager(plugin));
+        register(GAME_OPTIONS_MANAGER = new GameOptionsManager(plugin));
         register(GAME_MANAGER = new GameManager(plugin));
         register(GAME_STATS_MANAGER = new GameStatsManager(plugin));
         register(GLASS_MANAGER = new GlassManager(plugin));

@@ -14,11 +14,10 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 public class ArenaManager implements IManager {
-    private final List<Location> BOW_SPAWNS;
+    private final RandomCollection<Location> BOW_SPAWNS;
     private final RandomCollection<Location> SPAWNABLE_BLOCKS;
     private final RandomCollection<Location> PURPLE_SPAWNS;
     private final RandomCollection<Location> GREEN_SPAWNS;
@@ -26,7 +25,7 @@ public class ArenaManager implements IManager {
     private Cuboid region;
 
     public ArenaManager() {
-        BOW_SPAWNS = new ArrayList<>();
+        BOW_SPAWNS = new RandomCollection<>();
         SPAWNABLE_BLOCKS = new RandomCollection<>();
         PURPLE_SPAWNS = new RandomCollection<>();
         GREEN_SPAWNS = new RandomCollection<>();
@@ -34,6 +33,8 @@ public class ArenaManager implements IManager {
 
     public void fromSchematicRegion(Cuboid region) {
         this.region = region;
+
+        if (region == null) return;
 
         for (Block block : region.getBlocks()) {
             if (block == null) continue;
@@ -147,7 +148,11 @@ public class ArenaManager implements IManager {
      *
      * @return A list of locations
      */
-    public List<Location> getBowSpawns() {
+    public Collection<Location> getBowSpawns() {
+        return getRandomBowSpawns().values();
+    }
+
+    public RandomCollection<Location> getRandomBowSpawns() {
         return BOW_SPAWNS;
     }
 

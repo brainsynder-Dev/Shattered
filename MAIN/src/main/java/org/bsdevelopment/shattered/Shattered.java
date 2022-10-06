@@ -7,6 +7,9 @@ import org.bsdevelopment.shattered.files.Config;
 import org.bsdevelopment.shattered.files.DataStorage;
 import org.bsdevelopment.shattered.files.options.ConfigOption;
 import org.bsdevelopment.shattered.listeners.BowArrowListener;
+import org.bsdevelopment.shattered.listeners.JoinLeaveListener;
+import org.bsdevelopment.shattered.listeners.PlayerDamageListeners;
+import org.bsdevelopment.shattered.listeners.SignClickListeners;
 import org.bsdevelopment.shattered.managers.Management;
 import org.bsdevelopment.shattered.utilities.MessageType;
 import org.bsdevelopment.shattered.utilities.SchematicUtil;
@@ -84,6 +87,9 @@ public class Shattered extends JavaPlugin {
     private void registerListeners() {
         PluginManager manager = getServer().getPluginManager();
         manager.registerEvents(new BowArrowListener(this), this);
+        manager.registerEvents(new JoinLeaveListener(this), this);
+        manager.registerEvents(new SignClickListeners(), this);
+        manager.registerEvents(new PlayerDamageListeners(this), this);
     }
 
     public void reload() {
@@ -139,8 +145,16 @@ public class Shattered extends JavaPlugin {
                     "Lobby Spawn Location (/shattered lobby lobbyspawn)", true);
             formatCheck(sender, (Management.LOBBY_MANAGER.getReadyCube1() != null),
                     "Lobby Ready Cube 1 (/shattered lobby readycube1)", true);
-            formatCheck(sender, (Management.LOBBY_MANAGER.getReadyCube2() != null),
+            formatCheck(sender, (Management.LOBBY_MANAGER.getReadyCube1() != null),
+                    "  Ready-Up Sign 1 (Have a sign in readycube1)", true);
+            formatCheck(sender, (!Management.LOBBY_MANAGER.getReadyDoor1().isEmpty()),
+                    "  Ready Cube 1 Door (Does the readycube1 have a door)", true);
+            formatCheck(sender, (Management.LOBBY_MANAGER.getReadySign1() != null),
                     "Lobby Ready Cube 2 (/shattered lobby readycube2)", true);
+            formatCheck(sender, (Management.LOBBY_MANAGER.getReadySign2() != null),
+                    "  Ready-Up Sign 2 (Have a sign in readycube2)", true);
+            formatCheck(sender, (!Management.LOBBY_MANAGER.getReadyDoor2().isEmpty()),
+                    "  Ready Cube 2 Door (Does the readycube2 have a door)", true);
         }
 
         sender.sendMessage(" ");

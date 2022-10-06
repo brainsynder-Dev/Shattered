@@ -9,9 +9,12 @@ import org.bsdevelopment.shattered.Shattered;
 import org.bsdevelopment.shattered.command.ShatteredSub;
 import org.bsdevelopment.shattered.command.annotations.AdditionalUsage;
 import org.bsdevelopment.shattered.command.annotations.Permission;
+import org.bsdevelopment.shattered.game.GameState;
 import org.bsdevelopment.shattered.game.ShatteredPlayer;
 import org.bsdevelopment.shattered.managers.Management;
 import org.bsdevelopment.shattered.managers.list.ArenaManager;
+import org.bsdevelopment.shattered.managers.list.GameManager;
+import org.bsdevelopment.shattered.managers.list.LobbyManager;
 import org.bsdevelopment.shattered.utilities.Cooldown;
 import org.bsdevelopment.shattered.utilities.MessageType;
 import org.bsdevelopment.shattered.utilities.SchematicUtil;
@@ -28,10 +31,13 @@ import java.util.List;
 import java.util.UUID;
 
 @ICommand(name = "admin")
+@AdditionalUsage(name = "startcountdown", description = "Starts the game countdown")
+@AdditionalUsage(name = "forcestop", description = "Forces a game to end, no winners will be selected.")
 @AdditionalUsage(name = "corners", description = "Highlights the corner of the current map region")
+@AdditionalUsage(name = "readycubes", description = "Highlights the ready cube regions")
 @AdditionalUsage(name = "spawnpoints", usage = "<tries>", description = "Will generate spawn points around the map")
 @AdditionalUsage(name = "playerstress", usage = "<iterations>", description = "Will add x amount of fake players to the data-storage file")
-@Permission(permission = "admin", adminCommand = true, additionalPermissions = {"corners", "spawnpoints", "playerstress"})
+@Permission(permission = "admin", adminCommand = true, additionalPermissions = {"corners", "spawnpoints", "playerstress", "startcountdown"})
 public class AdminSubCommand extends ShatteredSub {
     private final Cooldown LONG_COOLDOWN;
 
@@ -63,6 +69,26 @@ public class AdminSubCommand extends ShatteredSub {
 
         if (!(sender instanceof Player player)) {
             getShattered().sendPrefixedMessage(sender, MessageType.ERROR, "Must be a player to run this command");
+            return;
+        }
+        if (args[0].equalsIgnoreCase("forcestop") && sender.hasPermission(getPermission("forcestop"))) {
+            GameManager gameManager = Management.GAME_MANAGER;
+            if (gameManager.getState() != GameState.IN_GAME) {
+                getShattered().sendPrefixedMessage(sender, MessageType.ERROR, "There is no game currently running.");
+                return;
+            }
+
+            Management.GAME_MANAGER.setState(GameState.CLEANUP);
+            return;
+        }
+        if (args[0].equalsIgnoreCase("startcountdown") && sender.hasPermission(getPermission("startcountdown"))) {
+            GameManager gameManager = Management.GAME_MANAGER;
+            if (gameManager.getState() != GameState.WAITING) {
+                getShattered().sendPrefixedMessage(sender, MessageType.ERROR, "Unable to start the countdown");
+                return;
+            }
+
+            Management.GAME_MANAGER.setState(GameState.COUNTDOWN);
             return;
         }
         if (args[0].equalsIgnoreCase("playerstress") && sender.hasPermission(getPermission("playerstress"))) {
@@ -133,6 +159,75 @@ public class AdminSubCommand extends ShatteredSub {
             });
             return;
         }
+
+
+        if (args[0].equalsIgnoreCase("readycubes")) {
+            if (LONG_COOLDOWN.hasCooldown(player.getName(), secondsLeft -> {
+                getShattered().sendPrefixedMessage(sender, MessageType.ERROR, "There is a cooldown on this command");
+                getShattered().sendPrefixedMessage(sender, MessageType.ERROR, "Time Left: " + MessageType.SHATTERED_GRAY + secondsLeft + "s");
+            })) return;
+            LONG_COOLDOWN.activateCooldown(player.getName());
+            LobbyManager lobbyManager = Management.LOBBY_MANAGER;
+
+            {
+                Cuboid region = lobbyManager.getReadyCube1();
+                List<Location> locations = new ArrayList<>();
+                for (Block block : region.getBlocks()) {
+                    int sides = 0;
+
+                    // Checking if the block is on the edge of the region.
+                    for (BlockFace face : Lists.newArrayList(BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN)) {
+                        if (!region.contains(block.getRelative(face))) sides++;
+                    }
+
+                    if (sides >= 2) locations.add(block.getLocation());
+                }
+
+                locations.forEach(location -> {
+                    ShatteredUtilities.highlightBlock(ChatColor.DARK_PURPLE, location, 20 * 30, player);
+                });
+
+                lobbyManager.getReadyDoor1().forEach(location -> {
+                    ShatteredUtilities.highlightBlock(ChatColor.LIGHT_PURPLE, location, 20 * 30, player);
+                });
+
+                if (lobbyManager.getReadySign1() != null) {
+                    ShatteredUtilities.highlightBlock(ChatColor.GOLD, lobbyManager.getReadySign1().getLocation(), 20 * 30, player);
+                }
+            }
+
+
+
+            {
+                Cuboid region = lobbyManager.getReadyCube2();
+                List<Location> locations = new ArrayList<>();
+                for (Block block : region.getBlocks()) {
+                    int sides = 0;
+
+                    // Checking if the block is on the edge of the region.
+                    for (BlockFace face : Lists.newArrayList(BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN)) {
+                        if (!region.contains(block.getRelative(face))) sides++;
+                    }
+
+                    if (sides >= 2) locations.add(block.getLocation());
+                }
+
+                locations.forEach(location -> {
+                    ShatteredUtilities.highlightBlock(ChatColor.DARK_GREEN, location, 20 * 30, player);
+                });
+
+                lobbyManager.getReadyDoor2().forEach(location -> {
+                    ShatteredUtilities.highlightBlock(ChatColor.GREEN, location, 20 * 30, player);
+                });
+
+                if (lobbyManager.getReadySign2() != null) {
+                    ShatteredUtilities.highlightBlock(ChatColor.GOLD, lobbyManager.getReadySign2().getLocation(), 20 * 30, player);
+                }
+            }
+            return;
+        }
+
+
         if (args[0].equalsIgnoreCase("spawnpoints")) {
             ArenaManager manager = Management.ARENA_MANAGER;
 

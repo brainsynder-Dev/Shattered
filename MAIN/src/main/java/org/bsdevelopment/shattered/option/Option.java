@@ -1,13 +1,16 @@
 package org.bsdevelopment.shattered.option;
 
+import java.util.Collection;
 import java.util.Objects;
 
 public class Option<T> {
     private final String name;
     private final T defaultValue;
+
     private T value;
     private int current = 0;
     T[] other;
+    private String description;
 
     public Option(String name, T defaultValue, T... allValues) {
         this.name = name;
@@ -15,12 +18,31 @@ public class Option<T> {
         this.other = allValues;
         for (T t : allValues) {
             if (t == defaultValue) break;
-            current++;
+            this.current++;
         }
+    }
+
+    public void setAllValues (Collection<T> collection) {
+        this.current = 0;
+
+        this.other = (T[]) collection.toArray();
+        for (T t : collection) {
+            if (t == this.defaultValue) break;
+            this.current++;
+        }
+    }
+
+    public Option<T> setDescription(String description) {
+        this.description = description;
+        return this;
     }
 
     public T getDefaultValue() {
         return defaultValue;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public String getName() {

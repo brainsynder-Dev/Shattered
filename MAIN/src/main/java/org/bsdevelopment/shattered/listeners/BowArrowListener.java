@@ -36,6 +36,7 @@ public class BowArrowListener implements Listener {
     public void onBowShoot (EntityShootBowEvent event) {
         if (!(event.getProjectile() instanceof Arrow arrow)) return;
         if (!(event.getEntity() instanceof Player player)) return;
+        if (event.getBow() == null) return;
 
         ShatteredBow bow = Management.BOW_MANAGER.getBow(Objects.requireNonNull(event.getBow()));
 
@@ -110,9 +111,13 @@ public class BowArrowListener implements Listener {
 
 
             if ((event.getHitEntity() != null) && (event.getHitEntity() instanceof Player player)) {
-                // TODO: Need to do the checks for teams and such.
-
-                if (bow instanceof HitPlayerTask hitPlayerTask) hitPlayerTask.onHit(arrow, info, player);
+                ShatteredGameMode gameMode = Management.GAME_MANAGER.getCurrentGamemode();
+                if ((gameMode != null) && (gameMode.canDamagePlayer(
+                        Management.PLAYER_MANAGER.getShatteredPlayer(player),
+                        Management.PLAYER_MANAGER.getShatteredPlayer(Objects.requireNonNull(info.getShooter()))
+                ))) {
+                    if (bow instanceof HitPlayerTask hitPlayerTask) hitPlayerTask.onHit(arrow, info, player);
+                }
             } else if (bow instanceof HitTask hitTask) hitTask.onHit(arrow, info);
             if (bow instanceof RemoveTask removeTask) removeTask.onRemove(arrow, info);
 

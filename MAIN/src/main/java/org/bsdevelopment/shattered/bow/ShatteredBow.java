@@ -21,12 +21,21 @@ import java.util.Objects;
 
 public abstract class ShatteredBow {
     private boolean enabled = true;
+    private boolean allowed = true;
+
+    public void setAllowed(boolean allowed) {
+        this.allowed = allowed;
+    }
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
     public abstract void cleanup ();
+
+    public boolean isAllowed() {
+        return allowed;
+    }
 
     public boolean isEnabled() {
         return enabled;
@@ -42,11 +51,11 @@ public abstract class ShatteredBow {
             typeBuilder.append(MessageType.SHATTERED_GRAY).append(type.name()).append(MessageType.SHATTERED_BLUE).append(" | ");
         }
 
-        ItemStack item = new ItemStack(bowData.itemIsBow() ? Material.BOW : Material.CROSSBOW, 1);
-        if (bowData.itemIsBow()) item.addEnchantment(Enchantment.ARROW_INFINITE, 1);
+        ItemStack item = new ItemStack(Material.BOW, 1);
+        item.addEnchantment(Enchantment.ARROW_INFINITE, 1);
 
         ItemMeta meta = Objects.requireNonNull(item.getItemMeta());
-        ((Damageable) meta).setDamage((short) ((bowData.itemIsBow() ? 384 : 465) - uses));
+        ((Damageable) meta).setDamage((short) (384 - (uses + Management.GAME_OPTIONS_MANAGER.BOW_USE_MULTIPLIER.getValue())));
 
         meta.setDisplayName(Colorize.translateBungeeHex(MessageType.SHATTERED_BLUE + bowData.name()));
 

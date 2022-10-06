@@ -9,6 +9,8 @@ public class KeyManager implements IManager {
     public NamespacedKey BOW_INFO_KEY;
     public NamespacedKey ARROW_CHILD_KEY;
 
+    public NamespacedKey READY_SIGN_KEY;
+
     private final Shattered PLUGIN;
 
     public KeyManager(Shattered plugin) {
@@ -21,6 +23,8 @@ public class KeyManager implements IManager {
         BOW_KEY = new NamespacedKey(PLUGIN, "bow");
         BOW_INFO_KEY = new NamespacedKey(PLUGIN, "bow_info");
         ARROW_CHILD_KEY = new NamespacedKey(PLUGIN, "arrow_child");
+
+        READY_SIGN_KEY = new NamespacedKey(PLUGIN, "ready_sign");
     }
 
     @Override

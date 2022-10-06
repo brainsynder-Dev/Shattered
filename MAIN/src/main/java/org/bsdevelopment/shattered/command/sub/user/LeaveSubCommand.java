@@ -6,6 +6,7 @@ import org.bsdevelopment.shattered.command.ShatteredSub;
 import org.bsdevelopment.shattered.command.annotations.Permission;
 import org.bsdevelopment.shattered.game.ShatteredPlayer;
 import org.bsdevelopment.shattered.managers.Management;
+import org.bsdevelopment.shattered.managers.list.GameManager;
 import org.bsdevelopment.shattered.utilities.MessageType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -33,6 +34,6 @@ public class LeaveSubCommand extends ShatteredSub {
             return;
         }
 
-        Management.GAME_MANAGER.leaveGame(shatteredPlayer);
+        Management.GAME_MANAGER.leaveGame(shatteredPlayer, GameManager.Reason.COMMAND);
     }
 }

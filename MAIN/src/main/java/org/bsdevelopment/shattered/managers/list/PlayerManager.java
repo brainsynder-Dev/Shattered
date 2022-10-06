@@ -22,6 +22,18 @@ public class PlayerManager implements IManager {
     }
 
     /**
+     * Adds a player to the player map if the player is not already in the map.
+     *
+     * @param player The player to add to the map.
+     *
+     * @deprecated This is only used for testing via `/shattered test playerstress`
+     */
+    @Deprecated
+    public void addPlayer(ShatteredPlayer player) {
+        PLAYER_MAP.putIfAbsent(player.getUuid(), player);
+    }
+
+    /**
      * If the player is not in the map, add them to the map and return the new ShatteredPlayer
      *
      * @param player The player to get the ShatteredPlayer of.

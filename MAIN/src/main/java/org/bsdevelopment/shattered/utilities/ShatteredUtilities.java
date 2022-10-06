@@ -9,21 +9,22 @@ import lib.brainsynder.utils.BlockLocation;
 import lib.brainsynder.utils.Cuboid;
 import lib.brainsynder.utils.DirectionUtils;
 import org.bsdevelopment.shattered.Shattered;
+import org.bsdevelopment.shattered.bow.ShatteredBow;
 import org.bsdevelopment.shattered.bow.data.BowInfo;
 import org.bsdevelopment.shattered.events.ShatteredCancelEvent;
 import org.bsdevelopment.shattered.events.ShatteredEvent;
+import org.bsdevelopment.shattered.game.GameState;
 import org.bsdevelopment.shattered.managers.Management;
 import org.bsdevelopment.shattered.version.VersionMatcher;
 import org.bsdevelopment.shattered.version.VersionWrapper;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -276,4 +277,31 @@ public class ShatteredUtilities {
         return null;
     }
 
+
+    public static void handleBowItem(ShatteredBow bow, Location location) {
+        Item item = location.getWorld().dropItem(location, bow.getItem());
+        // Setting the velocity of the item to 0.
+        item.setVelocity(new Vector(0, 0, 0));
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                // Checking if the item is valid. If it is not valid, it cancels the task.
+                if (!isValid(item)) {
+                    cancel();
+                    return;
+                }
+
+                // Checking if the game is in the IN_GAME state. If it is not, it will remove the item and cancel the task.
+                if (Management.GAME_MANAGER.getState() != GameState.IN_GAME) {
+                    item.remove();
+                    cancel();
+                    return;
+                }
+
+                // Spawning a particle at the location of the item.
+                location.getWorld().spawnParticle(Particle.SPELL_INSTANT, item.getLocation(), 10, 0.5, 0.5, 0.5);
+            }
+        }.runTaskTimer(Shattered.INSTANCE, 0, 4);
+    }
 }

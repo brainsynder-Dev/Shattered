@@ -37,6 +37,10 @@ public class StatsOption extends Option<Integer> {
         setValue(getValue()+1);
     }
 
+    public void decrease () {
+        setValue(getValue()-1);
+    }
+
     public String getDescription() {
         return description;
     }

@@ -1,20 +1,34 @@
 package org.bsdevelopment.shattered.game.modes;
 
+import lib.brainsynder.math.MathUtils;
+import lib.brainsynder.utils.Colorize;
 import lib.brainsynder.utils.Utilities;
 import net.md_5.bungee.api.ChatColor;
 import org.bsdevelopment.shattered.Shattered;
+import org.bsdevelopment.shattered.bow.ShatteredBow;
 import org.bsdevelopment.shattered.bow.data.BowInfo;
 import org.bsdevelopment.shattered.game.GameModeData;
 import org.bsdevelopment.shattered.game.ShatteredPlayer;
 import org.bsdevelopment.shattered.managers.Management;
 import org.bsdevelopment.shattered.utilities.MessageType;
+import org.bsdevelopment.shattered.utilities.ShatteredUtilities;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public abstract class ShatteredGameMode {
     private final Shattered PLUGIN;
+
     private BukkitRunnable task;
+    private int bowSpawnCountdown = 30;
 
     public ShatteredGameMode(Shattered plugin) {
         PLUGIN = plugin;
@@ -30,6 +44,12 @@ public abstract class ShatteredGameMode {
      */
     public abstract void cleanup ();
 
+    /**
+     * Disqualify a player from the game.
+     *
+     * @param shatteredPlayer The player to disqualify.
+     */
+    public abstract void disqualifyPlayer (ShatteredPlayer shatteredPlayer);
 
     /**
      * If the class has the annotation, return it. If it doesn't, throw an exception
@@ -45,15 +65,98 @@ public abstract class ShatteredGameMode {
      * This function is called when the game starts
      */
     public void start () {
-
+        Management.GAME_MANAGER.getCurrentPlayers().forEach(shatteredPlayer -> {
+            shatteredPlayer.getOrCreateBoard(fastBoard -> {
+                fastBoard.updateTitle(Colorize.translateBungeeHex(MessageType.SHATTERED_BLUE+getGameModeData().name()));
+            });
+        });
 
         task = new BukkitRunnable() {
             @Override
             public void run() {
                 tick();
+
+                Management.GAME_MANAGER.getCurrentPlayers().forEach(shatteredPlayer -> {
+                    // It's getting the FastBoard object from the player, and if it doesn't exist, it's creating it. Then,
+                    // it's updating the lines of the scoreboard.
+                    shatteredPlayer.getOrCreateBoard(fastBoard -> {
+                        fastBoard.updateLines(getScoreboardLines());
+                    });
+
+                    // It's checking if the player is in the game, and if they are, it's checking if they have an arrow in
+                    // their inventory. If they don't, it's giving them an arrow.
+                    if (shatteredPlayer.getState() == ShatteredPlayer.PlayerState.IN_GAME) {
+                        shatteredPlayer.fetchPlayer(player -> {
+                            if (!player.getInventory().contains(Material.ARROW))
+                                player.getInventory().setItem(17, new ItemStack(Material.ARROW, 1));
+                        });
+                    }
+                });
+
+                if (areBowsFull()) return;
+
+                if (bowSpawnCountdown != 0) {
+                    bowSpawnCountdown--;
+                    return;
+                }
+
+                // It's getting the minimum and maximum bow spawn time from the GameOptionsManager, and then it's setting
+                // the bow spawn countdown to a random number between the minimum and maximum.
+                int min = Management.GAME_OPTIONS_MANAGER.BOW_SPAWN_MIN.getValue();
+                int max = Management.GAME_OPTIONS_MANAGER.BOW_SPAWN_MAX.getValue();
+
+                if (min > max) {
+                    bowSpawnCountdown = MathUtils.random(max, min);
+                }else{
+                    bowSpawnCountdown = MathUtils.random(min, max);
+                }
+
+                ShatteredBow bow = Management.BOW_MANAGER.getRandomBow();
+                if (bow != null) {
+                    // It's checking how many bow spawns there are, and if there are more than 3, it will spawn 2 bows, and
+                    // if there are more than 5, it will spawn 3 bows.
+                    int count = 1;
+                    if (Management.ARENA_MANAGER.getBowSpawns().size() > 3) count = 2;
+                    if (Management.ARENA_MANAGER.getBowSpawns().size() > 5) count = 3;
+
+
+                    Location location = Management.ARENA_MANAGER.getRandomBowSpawns().next();
+                    for (int i = 0; i != count; i++) {
+                        int tries = 3;
+
+                        // It's checking if there are any items nearby the location, and if there are, it will get a new
+                        // location.
+                        while (!location.getWorld().getNearbyEntities(location, 0.5,0.5,0.5, entity -> entity instanceof Item).isEmpty()) {
+                            location = Management.ARENA_MANAGER.getRandomBowSpawns().next();
+                            tries--;
+
+                            if (tries == 0) return;
+                        }
+
+                        // It's spawning the bow item at the location.
+                        ShatteredUtilities.handleBowItem(bow, location);
+                    }
+                }
             }
         };
         task.runTaskTimer(PLUGIN, 0, 20);
+    }
+
+
+    /**
+     * If there are no bow spawns, return true. Otherwise, for each bow spawn, if there are no items nearby, return false.
+     * Otherwise, return true.
+     *
+     * @return A boolean value.
+     */
+    private boolean areBowsFull () {
+        if (Management.ARENA_MANAGER.getBowSpawns().isEmpty()) return true;
+        for (Location location : Management.ARENA_MANAGER.getBowSpawns()) {
+            if (location.getWorld().getNearbyEntities(location, 0.5,0.5,0.5, entity -> entity instanceof Item).isEmpty())
+                return false;
+        }
+
+        return true;
     }
 
     /**
@@ -107,7 +210,16 @@ public abstract class ShatteredGameMode {
      * @return A Location object.
      */
     public Location getSpawnLocation (ShatteredPlayer player) {
-        return Management.ARENA_MANAGER.getSpawnableBlocks().next();
+        Location location = Management.ARENA_MANAGER.getSpawnableBlocks().next();
+
+        int tries = 0;
+
+        while ((tries >= 10) && Objects.requireNonNull(location.getWorld()).getNearbyEntities(location, 7, 6, 7).stream().anyMatch(entity -> entity instanceof Player)) {
+            location = Management.ARENA_MANAGER.getSpawnableBlocks().next();
+            tries++;
+        }
+
+        return location;
     }
 
     /**
@@ -120,4 +232,75 @@ public abstract class ShatteredGameMode {
         return ChatColor.of(MessageType.SHATTERED_BLUE.toString().replace("&", ""));
     }
 
+    public List<String> getScoreboardLines () {
+        return new ArrayList<>();
+    }
+
+    /**
+     * If the victim and killer are the same player, return false. Otherwise, return true.
+     *
+     * @param victim The player who is being attacked
+     * @param killer The player who is attacking
+     * @return A boolean value.
+     */
+    public boolean canDamagePlayer (ShatteredPlayer victim, ShatteredPlayer killer) {
+        return !victim.getUuid().equals(killer.getUuid());
+    }
+
+    /**
+     * When a player dies, increase the death count, respawn the player, and broadcast a message
+     *
+     * @param shatteredPlayer The ShatteredPlayer object of the player who died.
+     * @param reasons The reason the player died.
+     * @param respawn If the player should respawn or not.
+     */
+    public void onDeath (ShatteredPlayer shatteredPlayer, DeathReasons reasons, boolean respawn) {
+        Management.GAME_STATS_MANAGER.DEATHS.increase();
+        if (respawn) respawnPlayer(shatteredPlayer);
+        if (reasons == DeathReasons.PLAYER) return;
+
+        if (respawn) {
+            broadcastMessage(getColor(shatteredPlayer) + shatteredPlayer.getName()+MessageType.SHATTERED_GRAY+" was killed by "+MessageType.SHATTERED_BLUE+reasons.name());
+            checkForWin();
+        }
+
+    }
+
+    /**
+     * When a player dies by another player, broadcast a message to the server
+     *
+     * @param victim The player who died
+     * @param killer The player who killed the victim
+     * @param respawn Whether or not the player should respawn.
+     */
+    public void onDeathByPlayer (ShatteredPlayer victim, ShatteredPlayer killer, boolean respawn) {
+        onDeath(victim, DeathReasons.PLAYER, respawn);
+
+        broadcastMessage(getColor(victim) + victim.getName()+MessageType.SHATTERED_GRAY+" was killed by "+getColor(killer)+killer.getName());
+    }
+
+    /**
+     * For each player in the game, send them a message.
+     *
+     * @param message The message to broadcast.
+     */
+    public void broadcastMessage (String message) {
+        Management.GAME_MANAGER.getCurrentPlayers().forEach(shatteredPlayer0 -> {
+            shatteredPlayer0.fetchPlayer(player -> {
+                PLUGIN.sendPrefixedMessage(player, MessageType.NO_PREFIX, message);
+            });
+        });
+    }
+
+    public enum DeathReasons {
+        UNKNOWN,
+        FALL_DAMAGE,
+        PLAYER,
+        VOID
+    }
+
+    @Override
+    public String toString() {
+        return "ShatteredGameMode{name=" + getGameModeData().name() + '}';
+    }
 }
