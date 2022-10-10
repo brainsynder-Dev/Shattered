@@ -49,7 +49,7 @@ public class GameManager implements IManager {
     @Override
     public void load() {
         currentGamemode = null;
-        Management.GAME_MANAGER.registerGamemode(PLUGIN, new FFAGameMode(Shattered.INSTANCE));
+        registerGamemode(PLUGIN, new FFAGameMode(Shattered.INSTANCE));
     }
 
     @Override
@@ -114,7 +114,7 @@ public class GameManager implements IManager {
         switch (state) {
             case WAITING: break;
             case COUNTDOWN:
-                if (currentGamemode == null) currentGamemode = RANDOM_GAMEMODES.next();
+                if (currentGamemode == null) currentGamemode = Management.GAME_OPTIONS_MANAGER.GAMEMODES.getValue(); // RANDOM_GAMEMODES.next();
 
                 gameCountdownTask = new GameCountdownTask(PLUGIN, currentGamemode);
 
@@ -208,6 +208,8 @@ public class GameManager implements IManager {
         gameMode.initiate();
 
         ShatteredUtilities.fireShatteredEvent(new GamemodeRegisterEvent(new GamemodeRegisterEvent.Culprit(type, key), gameMode));
+
+        Management.GAME_OPTIONS_MANAGER.GAMEMODES.setAllValues(RANDOM_GAMEMODES.values());
     }
 
     public ShatteredGameMode getGameMode (Class<?> gamemodeClass) {
