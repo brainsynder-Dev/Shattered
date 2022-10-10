@@ -162,7 +162,12 @@ public class GameManager implements IManager {
                 });
 
                 Management.GLASS_MANAGER.resetBlocks();
-                PLUGIN.getSchematics().resetRegion(() -> setState(GameState.WAITING));
+                PLUGIN.getSchematics().resetRegion(() -> {
+                    Management.LOBBY_MANAGER.getReadyCube1().toggleCube(false);
+                    Management.LOBBY_MANAGER.getReadyCube2().toggleCube(false);
+
+                    setState(GameState.WAITING);
+                });
 
                 break;
             }
