@@ -15,10 +15,7 @@ import org.bsdevelopment.shattered.managers.Management;
 import org.bsdevelopment.shattered.managers.list.ArenaManager;
 import org.bsdevelopment.shattered.managers.list.GameManager;
 import org.bsdevelopment.shattered.managers.list.LobbyManager;
-import org.bsdevelopment.shattered.utilities.Cooldown;
-import org.bsdevelopment.shattered.utilities.MessageType;
-import org.bsdevelopment.shattered.utilities.SchematicUtil;
-import org.bsdevelopment.shattered.utilities.ShatteredUtilities;
+import org.bsdevelopment.shattered.utilities.*;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -170,7 +167,8 @@ public class AdminSubCommand extends ShatteredSub {
             LobbyManager lobbyManager = Management.LOBBY_MANAGER;
 
             {
-                Cuboid region = lobbyManager.getReadyCube1();
+                ReadyCube readyCube = lobbyManager.getReadyCube1();
+                Cuboid region = readyCube.getRegion();
                 List<Location> locations = new ArrayList<>();
                 for (Block block : region.getBlocks()) {
                     int sides = 0;
@@ -187,19 +185,20 @@ public class AdminSubCommand extends ShatteredSub {
                     ShatteredUtilities.highlightBlock(ChatColor.DARK_PURPLE, location, 20 * 30, player);
                 });
 
-                lobbyManager.getReadyDoor1().forEach(location -> {
+                readyCube.getDoor().forEach(location -> {
                     ShatteredUtilities.highlightBlock(ChatColor.LIGHT_PURPLE, location, 20 * 30, player);
                 });
 
-                if (lobbyManager.getReadySign1() != null) {
-                    ShatteredUtilities.highlightBlock(ChatColor.GOLD, lobbyManager.getReadySign1().getLocation(), 20 * 30, player);
+                if (readyCube.getReadySign() != null) {
+                    ShatteredUtilities.highlightBlock(ChatColor.GOLD, readyCube.getReadySign().getLocation(), 20 * 30, player);
                 }
             }
 
 
 
             {
-                Cuboid region = lobbyManager.getReadyCube2();
+                ReadyCube readyCube = lobbyManager.getReadyCube1();
+                Cuboid region = readyCube.getRegion();
                 List<Location> locations = new ArrayList<>();
                 for (Block block : region.getBlocks()) {
                     int sides = 0;
@@ -216,12 +215,12 @@ public class AdminSubCommand extends ShatteredSub {
                     ShatteredUtilities.highlightBlock(ChatColor.DARK_GREEN, location, 20 * 30, player);
                 });
 
-                lobbyManager.getReadyDoor2().forEach(location -> {
+                readyCube.getDoor().forEach(location -> {
                     ShatteredUtilities.highlightBlock(ChatColor.GREEN, location, 20 * 30, player);
                 });
 
-                if (lobbyManager.getReadySign2() != null) {
-                    ShatteredUtilities.highlightBlock(ChatColor.GOLD, lobbyManager.getReadySign2().getLocation(), 20 * 30, player);
+                if (readyCube.getReadySign() != null) {
+                    ShatteredUtilities.highlightBlock(ChatColor.GOLD, readyCube.getReadySign().getLocation(), 20 * 30, player);
                 }
             }
             return;

@@ -101,7 +101,7 @@ public class GameManager implements IManager {
 
         if (reason == Reason.COMMAND) {
             // TODO: Re-store player data
-            player.setState(ShatteredPlayer.PlayerState.UNKNOWN);
+            Management.LOBBY_MANAGER.leaveLobby(player);
             return;
         }
         Management.LOBBY_MANAGER.joinLobby(player);

@@ -145,16 +145,8 @@ public class Shattered extends JavaPlugin {
                     "Lobby Spawn Location (/shattered lobby lobbyspawn)", true);
             formatCheck(sender, (Management.LOBBY_MANAGER.getReadyCube1() != null),
                     "Lobby Ready Cube 1 (/shattered lobby readycube1)", true);
-            formatCheck(sender, (Management.LOBBY_MANAGER.getReadyCube1() != null),
-                    "  Ready-Up Sign 1 (Have a sign in readycube1)", true);
-            formatCheck(sender, (!Management.LOBBY_MANAGER.getReadyDoor1().isEmpty()),
-                    "  Ready Cube 1 Door (Does the readycube1 have a door)", true);
-            formatCheck(sender, (Management.LOBBY_MANAGER.getReadySign1() != null),
+            formatCheck(sender, (Management.LOBBY_MANAGER.getReadyCube2() != null),
                     "Lobby Ready Cube 2 (/shattered lobby readycube2)", true);
-            formatCheck(sender, (Management.LOBBY_MANAGER.getReadySign2() != null),
-                    "  Ready-Up Sign 2 (Have a sign in readycube2)", true);
-            formatCheck(sender, (!Management.LOBBY_MANAGER.getReadyDoor2().isEmpty()),
-                    "  Ready Cube 2 Door (Does the readycube2 have a door)", true);
         }
 
         sender.sendMessage(" ");
