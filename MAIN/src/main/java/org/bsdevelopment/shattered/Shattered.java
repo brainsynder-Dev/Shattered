@@ -88,7 +88,7 @@ public class Shattered extends JavaPlugin {
         PluginManager manager = getServer().getPluginManager();
         manager.registerEvents(new BowArrowListener(this), this);
         manager.registerEvents(new JoinLeaveListener(this), this);
-        manager.registerEvents(new SignClickListeners(), this);
+        manager.registerEvents(new SignClickListeners(this), this);
         manager.registerEvents(new PlayerDamageListeners(this), this);
     }
 
