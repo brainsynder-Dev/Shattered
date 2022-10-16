@@ -53,6 +53,7 @@ public class Shattered extends JavaPlugin {
         if (!ADDONS_FOLDER.exists()) ADDONS_FOLDER.mkdirs();
 
         SCHEMATICS = new SchematicUtil(dataStorage.getLocation("arena-location", null), this);
+        SCHEMATICS.loadMapFiles();
 
         Management.initiate(this);
 
@@ -94,6 +95,7 @@ public class Shattered extends JavaPlugin {
 
     public void reload() {
         SCHEMATICS = new SchematicUtil(dataStorage.getLocation("arena-location", null), this);
+        SCHEMATICS.loadMapFiles();
     }
 
     public File getSchematicsFolder() {
@@ -133,13 +135,13 @@ public class Shattered extends JavaPlugin {
 
         // Arena/Maps
         formatCheck(sender, (Objects.requireNonNull(SCHEMATICS_FOLDER.listFiles()).length != 0),
-                "Map Schematics (WorldEdit schematic map files)", false);
+                "Map Schematics (Have schematic files in the Maps folder)", false);
         formatCheck(sender, (dataStorage.getLocation("arena-location", null) != null),
                 "Arena Location (/shattered setMapRegion)", false);
 
         // Lobby
         boolean lobbyCheck = (Management.LOBBY_MANAGER != null);
-        formatCheck(sender, lobbyCheck, "Lobby Manager", false);
+        formatCheck(sender, lobbyCheck, "Lobby Manager (Lobby Manager was registered)", false);
         if (lobbyCheck) {
             formatCheck(sender, (Management.LOBBY_MANAGER.getLobbySpawn() != null),
                     "Lobby Spawn Location (/shattered lobby lobbyspawn)", true);

@@ -16,6 +16,7 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import lib.brainsynder.utils.AdvString;
 import lib.brainsynder.utils.BlockLocation;
 import lib.brainsynder.utils.Cuboid;
 import org.bsdevelopment.shattered.Shattered;
@@ -28,21 +29,30 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class SchematicUtil {
-    private final com.sk89q.worldedit.world.World ADAPTED_WORLD;
-    private final Location CENTER_POINT;
     private final Shattered PLUGIN;
+    private final Map<String, String> ARENA_MAP;
+    private final RandomCollection<File> RANDOM_FILE;
 
+    private com.sk89q.worldedit.world.World ADAPTED_WORLD;
+    private Location CENTER_POINT = null;
     private Cuboid currentRegion = null;
 
     public SchematicUtil(Location centerPoint, Shattered plugin) {
+        PLUGIN = plugin;
+
+        ARENA_MAP = new HashMap<>();
+        RANDOM_FILE = new RandomCollection<>();
+
+        if (centerPoint == null) return;
         CENTER_POINT = centerPoint;
         ADAPTED_WORLD = BukkitAdapter.adapt(CENTER_POINT.getWorld());
-        PLUGIN = plugin;
 
         if (plugin.getDataStorage().hasKey("previous-map-region")) {
             currentRegion = new Cuboid (plugin.getDataStorage().getCompoundTag("previous-map-region"));
@@ -57,19 +67,38 @@ public class SchematicUtil {
         }
     }
 
-    public File getRandomMap () {
-        RandomCollection<File> collection = new RandomCollection<>();
+    public void loadMapFiles () {
+        ARENA_MAP.clear();
+        RANDOM_FILE.clear();
 
         if ((PLUGIN.getSchematicsFolder() == null) || (Objects.requireNonNull(PLUGIN.getSchematicsFolder().listFiles()).length == 0))
             throw new NullPointerException("No maps were located in the maps folder");
+
+        ARENA_MAP.put("RANDOM", "RANDOM");
+
         for (File file : Objects.requireNonNull(PLUGIN.getSchematicsFolder().listFiles())) {
             ClipboardFormat format = ClipboardFormats.findByFile(file);
             if (format == null) continue;
             if (!format.isFormat(file)) continue;
-            collection.add(file);
-        }
 
-        return collection.next();
+            String name = file.getName();
+            if (!name.contains(".")) continue;
+            if (name.endsWith(".disabled")) continue;
+            name = AdvString.beforeLast(".", name);
+
+            ARENA_MAP.put(name, file.getName());
+            RANDOM_FILE.add(file);
+        }
+    }
+
+    public File getRandomMap () {
+        if (RANDOM_FILE.isEmpty()) loadMapFiles();
+
+        return RANDOM_FILE.next();
+    }
+
+    public Map<String, String> getArenaMap() {
+        return ARENA_MAP;
     }
 
     public Cuboid getCurrentRegion() {

@@ -12,7 +12,7 @@ import java.io.IOException;
 
 @ICommand(
         name = "reload",
-        description = "Reloads the config file values"
+        description = "Reloads the plugin [the config and other stuff]"
 )
 @Permission(permission = "reload", adminCommand = true)
 public class ReloadSubCommand extends ShatteredSub {
@@ -27,7 +27,9 @@ public class ReloadSubCommand extends ShatteredSub {
         try {
             getShattered().getConfiguration().initValues();
 
+            getShattered().reload();
             Management.ARENA_MANAGER.fromSchematicRegion(getShattered().getSchematics().getCurrentRegion());
+
 
             getShattered().sendPrefixedMessage(sender, MessageType.MESSAGE, "Plugin has been reloaded");
         } catch (IOException e) {
