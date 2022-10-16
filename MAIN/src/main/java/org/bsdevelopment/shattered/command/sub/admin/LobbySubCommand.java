@@ -7,8 +7,12 @@ import org.bsdevelopment.shattered.command.ShatteredSub;
 import org.bsdevelopment.shattered.command.annotations.AdditionalUsage;
 import org.bsdevelopment.shattered.command.annotations.Permission;
 import org.bsdevelopment.shattered.managers.Management;
+import org.bsdevelopment.shattered.option.Option;
 import org.bsdevelopment.shattered.utilities.MessageType;
 import org.bsdevelopment.shattered.utilities.ShatteredUtilities;
+import org.bukkit.FluidCollisionMode;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -21,7 +25,8 @@ import java.util.List;
 @AdditionalUsage(name = "lobbyspawn", description = "Sets the spawn point of the lobby")
 @AdditionalUsage(name = "readycube1", description = "Sets the region for one of the ready cubes")
 @AdditionalUsage(name = "readycube2", description = "Sets the region for one of the ready cubes")
-@Permission(permission = "lobby", adminCommand = true, additionalPermissions = {"lobbyspawn", "readycube1", "readycube2"})
+@AdditionalUsage(name = "optionsign", usage = "<option>", description = "Sets the location of a sign that will allow modifications to that option")
+@Permission(permission = "lobby", adminCommand = true, additionalPermissions = {"lobbyspawn", "readycube1", "readycube2", "optionsign"})
 public class LobbySubCommand extends ShatteredSub {
 
     public LobbySubCommand(Shattered shattered) {
@@ -34,6 +39,12 @@ public class LobbySubCommand extends ShatteredSub {
         if (index == 1) {
             for (AdditionalUsage additionalUsage : getAdditionalUsage(getClass()))
                 completions.add(additionalUsage.name());
+        }
+
+        if ((index == 2) && args[0].equalsIgnoreCase("optionsign")) {
+            Management.GAME_OPTIONS_MANAGER.getOptions().forEach(option -> {
+                completions.add(option.getCombinedName());
+            });
         }
         return super.handleCompletions(completions, sender, index, args);
     }
@@ -55,6 +66,31 @@ public class LobbySubCommand extends ShatteredSub {
         if (args[0].equalsIgnoreCase("lobbyspawn") && sender.hasPermission(getPermission("lobbyspawn"))) {
             Management.LOBBY_MANAGER.setLobbySpawn(player.getLocation().clone().add(0, 0.5, 0));
             getShattered().sendPrefixedMessage(player, MessageType.MESSAGE, "Successfully set the lobby spawn location.");
+            return;
+        }
+
+        if (args[0].equalsIgnoreCase("optionsign") && sender.hasPermission(getPermission("optionsign"))) {
+            if (args.length == 1) {
+                getShattered().sendPrefixedMessage(sender, MessageType.ERROR, "Invalid command usage");
+                sendUsage(sender);
+                return;
+            }
+
+            Option option = Management.GAME_OPTIONS_MANAGER.getOptionFromName(args[1], true);
+            if (option == null) {
+                getShattered().sendPrefixedMessage(sender, MessageType.ERROR, "Unable to find option by the name of: "+MessageType.SHATTERED_GRAY+args[1]);
+                return;
+            }
+
+            Block block = player.getTargetBlockExact(10, FluidCollisionMode.NEVER);
+
+            if ((block == null) || (!(block.getState() instanceof Sign sign))) {
+                getShattered().sendPrefixedMessage(sender, MessageType.ERROR, "Invalid block targeted, please look at a sign");
+                return;
+            }
+
+            Management.GAME_OPTIONS_MANAGER.setSign(option, sign);
+            getShattered().sendPrefixedMessage(sender, MessageType.MESSAGE, "Successfully set the sign for "+MessageType.SHATTERED_BLUE+option.getName());
             return;
         }
 

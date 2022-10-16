@@ -2,6 +2,7 @@ package org.bsdevelopment.shattered.managers;
 
 import org.bsdevelopment.shattered.Shattered;
 import org.bsdevelopment.shattered.managers.list.*;
+import org.bsdevelopment.shattered.managers.list.lobby.LobbyManager;
 import org.bsdevelopment.shattered.utilities.MessageType;
 import org.bukkit.Bukkit;
 

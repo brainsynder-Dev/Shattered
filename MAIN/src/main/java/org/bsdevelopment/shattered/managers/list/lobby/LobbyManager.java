@@ -1,11 +1,11 @@
-package org.bsdevelopment.shattered.managers.list;
+package org.bsdevelopment.shattered.managers.list.lobby;
 
 import lib.brainsynder.utils.Cuboid;
 import org.bsdevelopment.shattered.Shattered;
 import org.bsdevelopment.shattered.files.DataStorage;
 import org.bsdevelopment.shattered.game.ShatteredPlayer;
 import org.bsdevelopment.shattered.managers.IManager;
-import org.bsdevelopment.shattered.utilities.ReadyCube;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
 import java.util.ArrayList;
@@ -31,10 +31,10 @@ public class LobbyManager implements IManager {
         lobbySpawn = storage.getLocation("lobby-spawn", null);
 
         if (storage.hasKey("readyCube1")) {
-            readyCube1 = new ReadyCube(storage.getCompoundTag("readyCube1"));
+            readyCube1 = new ReadyCube(this, ChatColor.DARK_GREEN, storage.getCompoundTag("readyCube1"));
         }
         if (storage.hasKey("readyCube2")) {
-            readyCube2 = new ReadyCube(storage.getCompoundTag("readyCube2"));
+            readyCube2 = new ReadyCube(this, ChatColor.DARK_PURPLE, storage.getCompoundTag("readyCube2"));
         }
     }
 
@@ -85,13 +85,11 @@ public class LobbyManager implements IManager {
     }
 
     public void setReadyCube1(Cuboid readyCube) {
-        this.readyCube1 = new ReadyCube (readyCube);
-        updateDataStorage();
+        this.readyCube1 = new ReadyCube (this, ChatColor.DARK_GREEN, readyCube);
     }
 
     public void setReadyCube2(Cuboid readyCube) {
-        this.readyCube2 = new ReadyCube (readyCube);
-        updateDataStorage();
+        this.readyCube2 = new ReadyCube (this, ChatColor.DARK_PURPLE, readyCube);
     }
 
     public void setLobbySpawn(Location location) {
@@ -99,7 +97,7 @@ public class LobbyManager implements IManager {
         updateDataStorage();
     }
 
-    private void updateDataStorage() {
+    void updateDataStorage() {
         DataStorage storage = PLUGIN.getDataStorage();
         if (lobbySpawn != null) storage.setLocation("lobby-spawn", lobbySpawn);
         if (readyCube1 != null) storage.setTag("readyCube1", readyCube1.toCompound());
