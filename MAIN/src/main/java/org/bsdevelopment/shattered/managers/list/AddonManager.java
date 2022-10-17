@@ -4,6 +4,7 @@ import lib.brainsynder.utils.Triple;
 import org.bsdevelopment.shattered.Shattered;
 import org.bsdevelopment.shattered.api.ShatteredAddon;
 import org.bsdevelopment.shattered.managers.IManager;
+import org.bsdevelopment.shattered.managers.Management;
 import org.bsdevelopment.shattered.utilities.MessageType;
 import org.bukkit.Bukkit;
 
@@ -31,13 +32,17 @@ public class AddonManager implements IManager {
     @Override
     public void load() {
         File folder = PLUGIN.getAddonsFolder();
-        if (folder.listFiles() == null) return;
+        if (folder.listFiles() == null) {
+            Management.GAME_OPTIONS_MANAGER.loadSignLocations();
+            return;
+        }
 
         for (File file : Objects.requireNonNull(folder.listFiles())) loadAddon(file);
 
         if (ADDON_DATA.isEmpty())
             PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.ERROR, "No addons were loaded...");
 
+        Management.GAME_OPTIONS_MANAGER.loadSignLocations();
     }
 
     @Override
