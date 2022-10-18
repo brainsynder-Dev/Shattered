@@ -259,6 +259,10 @@ public class GameManager implements IManager {
         return null;
     }
 
+    public void setCurrentGamemode(ShatteredGameMode currentGamemode) {
+        this.currentGamemode = currentGamemode;
+    }
+
     public enum Reason {
         COMMAND,
         LOGIN_OR_OUT
