@@ -1,6 +1,5 @@
 package org.bsdevelopment.shattered.command.sub.admin;
 
-import com.google.common.collect.Lists;
 import lib.brainsynder.commands.annotations.ICommand;
 import org.bsdevelopment.shattered.Shattered;
 import org.bsdevelopment.shattered.command.ShatteredSub;
@@ -32,8 +31,6 @@ public class MapSubCommand extends ShatteredSub {
         super(shattered);
         COOLDOWN = new Cooldown(5);
         LONG_COOLDOWN = new Cooldown(10);
-
-        registerCompletion(1, Lists.newArrayList("generate", "reset", "highlight"));
         registerCompletion(2, (commandSender, list, s) -> {
             if (s.equalsIgnoreCase("generate")) {
                 for (File file : shattered.getSchematicsFolder().listFiles()) {

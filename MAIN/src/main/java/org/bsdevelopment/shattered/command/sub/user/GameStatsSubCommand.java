@@ -26,14 +26,6 @@ import org.bukkit.command.CommandSender;
 public class GameStatsSubCommand extends ShatteredSub {
     public GameStatsSubCommand(Shattered shattered) {
         super(shattered);
-
-        registerCompletion(1, (commandSender, list, s) -> {
-            if (commandSender.hasPermission(getPermission("previous"))) {
-                list.add("previous");
-                return true;
-            }
-            return false;
-        });
     }
 
     @Override
@@ -43,7 +35,7 @@ public class GameStatsSubCommand extends ShatteredSub {
             return;
         }
 
-        if (args[0].equalsIgnoreCase("previous")) {
+        if (args[0].equalsIgnoreCase("previous") && sender.hasPermission(getPermission("previous"))) {
             outputStats(sender, Management.GAME_STATS_MANAGER.getPreviousStats());
             return;
         }

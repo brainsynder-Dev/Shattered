@@ -23,7 +23,15 @@ public class ShatteredSub extends SubCommand {
         return shattered;
     }
 
-
+    @Override
+    public List<String> handleCompletions(List<String> completions, CommandSender sender, int index, String[] args) {
+        if (!canExecute(sender)) return super.handleCompletions(completions, sender, index, args);
+        if (index == 1) {
+            for (AdditionalUsage additionalUsage : getAdditionalUsage(getClass()))
+                completions.add(additionalUsage.name());
+        }
+        return super.handleCompletions(completions, sender, index, args);
+    }
 
     @Override
     public void sendUsage(CommandSender sender) {

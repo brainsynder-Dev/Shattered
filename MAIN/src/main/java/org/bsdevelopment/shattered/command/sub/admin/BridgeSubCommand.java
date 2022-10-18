@@ -1,6 +1,5 @@
 package org.bsdevelopment.shattered.command.sub.admin;
 
-import com.google.common.collect.Lists;
 import lib.brainsynder.commands.annotations.ICommand;
 import lib.brainsynder.utils.Cuboid;
 import org.bsdevelopment.shattered.Shattered;
@@ -23,7 +22,6 @@ public class BridgeSubCommand extends ShatteredSub {
 
     public BridgeSubCommand(Shattered shattered) {
         super(shattered);
-        registerCompletion(1, Lists.newArrayList("add", "remove"));
     }
 
     @Override
