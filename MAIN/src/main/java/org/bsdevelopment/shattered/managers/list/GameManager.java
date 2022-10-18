@@ -50,6 +50,8 @@ public class GameManager implements IManager {
     public void load() {
         currentGamemode = null;
         registerGamemode(PLUGIN, new FFAGameMode(Shattered.INSTANCE));
+
+        Management.GAME_OPTIONS_MANAGER.GAMEMODES.setDefaultValue(getGameMode(FFAGameMode.class));
     }
 
     @Override
@@ -147,7 +149,10 @@ public class GameManager implements IManager {
                 });
                 break;
             case CLEANUP: {
-                gameCountdownTask = null;
+                if (gameCountdownTask != null) {
+                    gameCountdownTask.cancel();
+                    gameCountdownTask = null;
+                }
 
                 if (currentGamemode != null) {
                     currentGamemode.onEnd();
@@ -214,7 +219,7 @@ public class GameManager implements IManager {
 
         ShatteredUtilities.fireShatteredEvent(new GamemodeRegisterEvent(new GamemodeRegisterEvent.Culprit(type, key), gameMode));
 
-        Management.GAME_OPTIONS_MANAGER.GAMEMODES.setAllValues(RANDOM_GAMEMODES.values());
+        Management.GAME_OPTIONS_MANAGER.GAMEMODES.setValueList(RANDOM_GAMEMODES.values());
     }
 
     public ShatteredGameMode getGameMode (Class<?> gamemodeClass) {

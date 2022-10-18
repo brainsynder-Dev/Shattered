@@ -301,6 +301,6 @@ public abstract class ShatteredGameMode {
 
     @Override
     public String toString() {
-        return "ShatteredGameMode{name=" + getGameModeData().name() + '}';
+        return getGameModeData().name();
     }
 }
