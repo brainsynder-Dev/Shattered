@@ -45,7 +45,7 @@ public class BridgeManager implements IManager {
 
     @Override
     public void cleanup() {
-        PARTICLE_TASK.cancel();
+        if (PARTICLE_TASK != null) PARTICLE_TASK.cancel();
 
         updateDataStorage();
 
