@@ -6,10 +6,7 @@ import org.bsdevelopment.shattered.command.ShatteredCommand;
 import org.bsdevelopment.shattered.files.Config;
 import org.bsdevelopment.shattered.files.DataStorage;
 import org.bsdevelopment.shattered.files.options.ConfigOption;
-import org.bsdevelopment.shattered.listeners.BowArrowListener;
-import org.bsdevelopment.shattered.listeners.JoinLeaveListener;
-import org.bsdevelopment.shattered.listeners.PlayerDamageListeners;
-import org.bsdevelopment.shattered.listeners.SignClickListeners;
+import org.bsdevelopment.shattered.listeners.*;
 import org.bsdevelopment.shattered.managers.Management;
 import org.bsdevelopment.shattered.utilities.MessageType;
 import org.bsdevelopment.shattered.utilities.SchematicUtil;
@@ -98,6 +95,7 @@ public class Shattered extends JavaPlugin {
         manager.registerEvents(new JoinLeaveListener(this), this);
         manager.registerEvents(new SignClickListeners(this), this);
         manager.registerEvents(new PlayerDamageListeners(this), this);
+        manager.registerEvents(new MoveListener(), this);
     }
 
     public void reload() {
