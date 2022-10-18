@@ -35,7 +35,8 @@ public class GameCountdownTask extends BukkitRunnable {
         ShatteredUtilities.fireShatteredEvent(new GameCountdownEvent(time, GAMEMODE));
 
         switch (time) {
-            case 80, 70, 60, 50, 40, 30, 20, 10, 5, 4, 3, 2, 1:
+            case 80, 70, 60, 50, 40, 30, 20, 10, 5, 4, 3, 2, 1 -> {
+                PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "Remaining Time: "+time);
                 message = message.setHeader(ChatColor.GRAY + "" + time);
                 Management.GAME_MANAGER.getCurrentPlayers().forEach(shatteredPlayer -> {
                     shatteredPlayer.fetchPlayer(player -> {
@@ -43,9 +44,10 @@ public class GameCountdownTask extends BukkitRunnable {
                         player.playSound(player, Sound.BLOCK_NOTE_BLOCK_SNARE, 1f, 1f);
                     });
                 });
-                break;
-            case 0:
+            }
+            case 0 -> {
                 if ((Management.GAME_MANAGER.getCurrentPlayers().size() == 1) && !ConfigOption.INSTANCE.TESTING_MODE.getValue()) {
+                    PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "Not enough players... cleanup the mess...");
                     Management.GAME_MANAGER.setState(GameState.CLEANUP);
                     for (Player player : Bukkit.getOnlinePlayers()) {
                         PLUGIN.sendPrefixedMessage(player, MessageType.ERROR, "Not enough players to play.");
@@ -53,17 +55,16 @@ public class GameCountdownTask extends BukkitRunnable {
                     cancel();
                     return;
                 }
+                PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "Countdown finished... start the game...");
                 message.setHeader(" ");
-
                 Management.GAME_MANAGER.getCurrentPlayers().forEach(shatteredPlayer -> {
                     shatteredPlayer.fetchPlayer(player -> {
                         message.sendMessage(player);
                     });
                 });
-
                 Management.GAME_MANAGER.setState(GameState.IN_GAME);
                 cancel();
-                break;
+            }
         }
     }
 }
