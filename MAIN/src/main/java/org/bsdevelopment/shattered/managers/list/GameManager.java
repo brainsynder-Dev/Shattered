@@ -164,7 +164,7 @@ public class GameManager implements IManager {
                         player.getInventory().setItem(17, new ItemStack(Material.ARROW));
                         player.getInventory().addItem(Management.BOW_MANAGER.getBow(StarterBow.class).getItem());
 
-                        player.teleport(currentGamemode.getSpawnLocation(shatteredPlayer));
+                        currentGamemode.respawnPlayer(shatteredPlayer);
                     });
                 });
                 break;
