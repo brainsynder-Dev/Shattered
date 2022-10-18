@@ -32,6 +32,7 @@ public abstract class ShatteredGameMode {
 
     private BukkitRunnable task;
     private int bowSpawnCountdown = 30;
+    private boolean allowSpecialBows = true;
 
     public ShatteredGameMode(Shattered plugin) {
         PLUGIN = plugin;
@@ -68,6 +69,8 @@ public abstract class ShatteredGameMode {
      * This function is called when the game starts
      */
     public void start () {
+        allowSpecialBows = Management.GAME_OPTIONS_MANAGER.SPECIAL_BOWS.getValue();
+
         Management.GAME_MANAGER.getCurrentPlayers().forEach(shatteredPlayer -> {
             shatteredPlayer.getOrCreateBoard(fastBoard -> {
                 fastBoard.updateTitle(Colorize.translateBungeeHex(MessageType.SHATTERED_BLUE+getGameModeData().name()));
@@ -100,6 +103,8 @@ public abstract class ShatteredGameMode {
                         });
                     }
                 });
+
+                if (!allowSpecialBows) return;
 
                 if (areBowsFull()) return;
 

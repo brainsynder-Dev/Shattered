@@ -36,6 +36,7 @@ public class GameOptionsManager implements IManager {
     public Option<Boolean> GOLDEN_BOW;
     public Option<Boolean> FRAGILE_GLASS;
     public Option<Boolean> LOW_GRAVITY;
+    public Option<Boolean> SPECIAL_BOWS;
 
     public Option<Integer> BOW_SPAWN_MIN;
     public Option<Integer> BOW_SPAWN_MAX;
@@ -72,6 +73,9 @@ public class GameOptionsManager implements IManager {
 
         register(getClass(), LOW_GRAVITY = new BooleanOption("Low Gravity", false)
                 .setDescription("Jump up, jump up and get down!"));
+
+        register(getClass(), SPECIAL_BOWS = new BooleanOption("Special Bows", true)
+                .setDescription("Allow the special bow types"));
 
         register(getClass(), BOW_SPAWN_MIN = new IntegerOption("Bow Spawn Min", 20, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110)
                 .setDescription("The fastest a bow can spawn in a game"));
