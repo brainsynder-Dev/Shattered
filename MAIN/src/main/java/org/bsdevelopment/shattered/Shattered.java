@@ -69,7 +69,13 @@ public class Shattered extends JavaPlugin {
         new BukkitRunnable() {
             @Override
             public void run() {
-                runSetupCheck(Bukkit.getConsoleSender());
+                if (ConfigOption.INSTANCE.SETUP_CHECK.getValue()) runSetupCheck(Bukkit.getConsoleSender());
+
+                if (ConfigOption.INSTANCE.BUNGEE_MODE.getValue()) {
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        Management.LOBBY_MANAGER.joinLobby(Management.PLAYER_MANAGER.getShatteredPlayer(player));
+                    }
+                }
             }
         }.runTaskLater(this, 20);
     }
