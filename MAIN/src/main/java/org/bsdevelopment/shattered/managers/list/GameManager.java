@@ -140,15 +140,18 @@ public class GameManager implements IManager {
                     if (mapSchematic == null) mapSchematic = PLUGIN.getSchematics().getRandomMap();
 
                     PLUGIN.getSchematics().pasteSchematic(mapSchematic, () -> {
+                        PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "Generated map... starting countdown");
                         gameCountdownTask.runTaskTimer(PLUGIN, 0, 20);
                     });
                 }else{
+                    PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "Map already there, starting countdown");
                     gameCountdownTask.runTaskTimer(PLUGIN, 0, 20);
                 }
                 break;
             case IN_GAME:
                 gameCountdownTask = null;
 
+                PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "GameMode.start()");
                 currentGamemode.start();
 
                 Management.GAME_STATS_MANAGER.resetStats();
