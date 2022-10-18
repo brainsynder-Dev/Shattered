@@ -160,6 +160,8 @@ public class GameManager implements IManager {
                     shatteredPlayer.setPlaying(true);
                     shatteredPlayer.setState(ShatteredPlayer.PlayerState.IN_GAME);
                     shatteredPlayer.fetchPlayer(player -> {
+                        player.getInventory().clear();
+
                         player.setGameMode(GameMode.ADVENTURE);
                         player.getInventory().setItem(17, new ItemStack(Material.ARROW));
                         player.getInventory().addItem(Management.BOW_MANAGER.getBow(StarterBow.class).getItem());
