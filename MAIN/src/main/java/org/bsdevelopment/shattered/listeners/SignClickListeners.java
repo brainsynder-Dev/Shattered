@@ -7,9 +7,14 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bsdevelopment.shattered.Shattered;
 import org.bsdevelopment.shattered.game.GameState;
+import org.bsdevelopment.shattered.game.ShatteredPlayer;
+import org.bsdevelopment.shattered.game.modes.ShatteredGameMode;
 import org.bsdevelopment.shattered.managers.Management;
+import org.bsdevelopment.shattered.managers.list.lobby.ReadyCube;
+import org.bsdevelopment.shattered.option.GameModeOption;
+import org.bsdevelopment.shattered.option.Option;
 import org.bsdevelopment.shattered.utilities.MessageType;
-import org.bsdevelopment.shattered.utilities.ReadyCube;
+import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.event.EventHandler;
@@ -24,6 +29,42 @@ public class SignClickListeners implements Listener {
         PLUGIN = plugin;
     }
 
+    @EventHandler (ignoreCancelled = true)
+    private void onOptionClick(PlayerInteractEvent event) {
+        if (event.getClickedBlock() == null) return;
+        Block block = event.getClickedBlock();
+
+        if (!block.getType().name().contains("SIGN")) return;
+        Sign sign = (Sign) block.getState();
+
+        if (!sign.getPersistentDataContainer().has(Management.KEY_MANAGER.OPTION_SIGN_KEY, DataType.STRING)) return;
+        ShatteredPlayer shatteredPlayer = Management.PLAYER_MANAGER.getShatteredPlayer(event.getPlayer());
+        if (shatteredPlayer.getState() != ShatteredPlayer.PlayerState.LOBBY) return;
+
+        if (Management.GAME_MANAGER.getState() != GameState.WAITING) return;
+
+        String optionName = sign.getPersistentDataContainer().get(Management.KEY_MANAGER.OPTION_SIGN_KEY, DataType.STRING);
+
+        Option<?> option = Management.GAME_OPTIONS_MANAGER.getOptionFromName(optionName, true);
+
+        if (event.getPlayer().isSneaking()) {
+            option.previous();
+        }else{
+            option.next();
+        }
+
+        if (option instanceof GameModeOption gameModeOption) {
+            ShatteredGameMode gameMode = gameModeOption.getValue();
+            Management.GAME_MANAGER.setCurrentGamemode(gameMode);
+        }
+
+        if (option == Management.GAME_OPTIONS_MANAGER.LIGHTING) {
+            Management.LOBBY_MANAGER.getLobbyPlayers().forEach(shatteredPlayer1 -> Management.LOBBY_MANAGER.updateLighting(shatteredPlayer1));
+        }
+
+        Management.GAME_OPTIONS_MANAGER.updateSign(option);
+    }
+
 
     @EventHandler
     private void onClickReady(PlayerInteractEvent event) {
@@ -34,6 +75,8 @@ public class SignClickListeners implements Listener {
         Sign sign = (Sign) block.getState();
 
         if (!sign.getPersistentDataContainer().has(Management.KEY_MANAGER.READY_SIGN_KEY, DataType.BOOLEAN)) return;
+        ShatteredPlayer shatteredPlayer = Management.PLAYER_MANAGER.getShatteredPlayer(event.getPlayer());
+        if (shatteredPlayer.getState() != ShatteredPlayer.PlayerState.LOBBY) return;
         boolean value = sign.getPersistentDataContainer().get(Management.KEY_MANAGER.READY_SIGN_KEY, DataType.BOOLEAN);
 
         ReadyCube readyCube1 = Management.LOBBY_MANAGER.getReadyCube1();
@@ -91,7 +134,7 @@ public class SignClickListeners implements Listener {
                                 });
                                 return;
                             }
-
+                            PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "Starting countdown...");
                             Management.GAME_MANAGER.setState(GameState.COUNTDOWN);
                         }
                         return;
