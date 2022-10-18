@@ -83,11 +83,25 @@ public class SignClickListeners implements Listener {
         ReadyCube readyCube2 = Management.LOBBY_MANAGER.getReadyCube2();
 
         if (sign.getLocation().equals(readyCube1.getReadySign().getLocation())) {
-            readyCube1.toggleCube(!value);
+            readyCube1.toggleCube(value = !value);
         }else if (sign.getLocation().equals(readyCube2.getReadySign().getLocation())) {
-            readyCube2.toggleCube(!value);
+            readyCube2.toggleCube(value = !value);
         }
 
+        boolean bypassCubeCount = false;
+
+        if (value) {
+            int totalPlayers = Management.LOBBY_MANAGER.getLobbyPlayers().size();
+
+            if (readyCube1.getCubePlayers().size() == totalPlayers) {
+                readyCube2.toggleCube(true);
+                bypassCubeCount = true;
+            }
+            if (readyCube2.getCubePlayers().size() == totalPlayers) {
+                readyCube1.toggleCube(true);
+                bypassCubeCount = true;
+            }
+        }
 
 
         if (readyCube1.isReady() && readyCube2.isReady()) {
@@ -109,6 +123,7 @@ public class SignClickListeners implements Listener {
 //                }
 //            });
 
+            boolean finalBypassCubeCount = bypassCubeCount;
             new BukkitRunnable() {
                 int time = 5;
 
@@ -126,7 +141,7 @@ public class SignClickListeners implements Listener {
 
                     if (time <= 0) {
                         if (readyCube1.isReady() && readyCube2.isReady()) {
-                            if (readyCube1.getCubePlayers().isEmpty() || readyCube2.getCubePlayers().isEmpty()) {
+                            if ((!finalBypassCubeCount) && (readyCube1.getCubePlayers().isEmpty() || readyCube2.getCubePlayers().isEmpty())) {
                                 cancel();
                                 Management.GAME_MANAGER.setState(GameState.CLEANUP);
                                 Management.LOBBY_MANAGER.getLobbyPlayers().forEach(shatteredPlayer -> {
