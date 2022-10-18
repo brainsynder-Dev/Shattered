@@ -121,7 +121,12 @@ public class GameManager implements IManager {
                 gameCountdownTask = new GameCountdownTask(PLUGIN, currentGamemode);
 
                 if (PLUGIN.getSchematics().getCurrentRegion() == null) {
-                    File mapSchematic = PLUGIN.getSchematics().getRandomMap();
+                    PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "No Map generated... generating...");
+                    String mapTarget = Management.GAME_OPTIONS_MANAGER.MAP_SELECTION.getValue();
+
+                    File mapSchematic = PLUGIN.getSchematics().getArenaMap().getOrDefault(mapTarget, null);
+                    if (mapSchematic == null) mapSchematic = PLUGIN.getSchematics().getRandomMap();
+
                     PLUGIN.getSchematics().pasteSchematic(mapSchematic, () -> {
                         gameCountdownTask.runTaskTimer(PLUGIN, 0, 20);
                     });

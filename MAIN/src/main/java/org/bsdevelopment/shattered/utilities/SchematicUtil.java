@@ -37,7 +37,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class SchematicUtil {
     private final Shattered PLUGIN;
-    private final Map<String, String> ARENA_MAP;
+    private final Map<String, File> ARENA_MAP;
     private final RandomCollection<File> RANDOM_FILE;
 
     private com.sk89q.worldedit.world.World ADAPTED_WORLD;
@@ -74,7 +74,7 @@ public class SchematicUtil {
         if ((PLUGIN.getSchematicsFolder() == null) || (Objects.requireNonNull(PLUGIN.getSchematicsFolder().listFiles()).length == 0))
             throw new NullPointerException("No maps were located in the maps folder");
 
-        ARENA_MAP.put("RANDOM", "RANDOM");
+        ARENA_MAP.put("RANDOM", null);
 
         for (File file : Objects.requireNonNull(PLUGIN.getSchematicsFolder().listFiles())) {
             ClipboardFormat format = ClipboardFormats.findByFile(file);
@@ -86,7 +86,7 @@ public class SchematicUtil {
             if (name.endsWith(".disabled")) continue;
             name = AdvString.beforeLast(".", name);
 
-            ARENA_MAP.put(name, file.getName());
+            ARENA_MAP.put(name, file);
             RANDOM_FILE.add(file);
         }
     }
@@ -97,7 +97,7 @@ public class SchematicUtil {
         return RANDOM_FILE.next();
     }
 
-    public Map<String, String> getArenaMap() {
+    public Map<String, File> getArenaMap() {
         return ARENA_MAP;
     }
 
