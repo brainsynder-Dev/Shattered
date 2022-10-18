@@ -55,6 +55,9 @@ public class LobbyManager implements IManager {
         shatteredPlayer.setState(ShatteredPlayer.PlayerState.LOBBY);
 
         shatteredPlayer.fetchPlayer(player -> {
+            player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
+            player.setFallDistance(0);
+            player.setHealth(20);
             player.setArrowsInBody(0);
             player.teleport(lobbySpawn);
         });
