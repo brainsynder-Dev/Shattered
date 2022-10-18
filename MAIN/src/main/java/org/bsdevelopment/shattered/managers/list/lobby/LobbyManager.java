@@ -5,6 +5,8 @@ import org.bsdevelopment.shattered.Shattered;
 import org.bsdevelopment.shattered.files.DataStorage;
 import org.bsdevelopment.shattered.game.ShatteredPlayer;
 import org.bsdevelopment.shattered.managers.IManager;
+import org.bsdevelopment.shattered.managers.Management;
+import org.bsdevelopment.shattered.utilities.TimeType;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
@@ -47,6 +49,14 @@ public class LobbyManager implements IManager {
         lobbySpawn = null;
     }
 
+    public void updateLighting (ShatteredPlayer shatteredPlayer) {
+        if (Management.GAME_OPTIONS_MANAGER.LIGHTING.getValue() == TimeType.DAY) {
+            shatteredPlayer.fetchPlayer(player -> player.setPlayerTime(6000, false));
+        }else{
+            shatteredPlayer.fetchPlayer(player -> player.setPlayerTime(18000, false));
+        }
+    }
+
     public void joinLobby(ShatteredPlayer shatteredPlayer) {
         if (!PLAYERS.contains(shatteredPlayer)) PLAYERS.add(shatteredPlayer);
 
@@ -61,6 +71,8 @@ public class LobbyManager implements IManager {
             player.setArrowsInBody(0);
             player.teleport(lobbySpawn);
         });
+
+        updateLighting(shatteredPlayer);
     }
 
     public void leaveLobby (ShatteredPlayer shatteredPlayer) {

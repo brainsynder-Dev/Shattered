@@ -10,6 +10,7 @@ import org.bsdevelopment.shattered.managers.IManager;
 import org.bsdevelopment.shattered.managers.Management;
 import org.bsdevelopment.shattered.option.*;
 import org.bsdevelopment.shattered.utilities.MessageType;
+import org.bsdevelopment.shattered.utilities.TimeType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -29,9 +30,12 @@ public class GameOptionsManager implements IManager {
 
     public Option<ShatteredGameMode> GAMEMODES;
     public Option<String> MAP_SELECTION;
+    public Option<TimeType> LIGHTING;
 
     public Option<Boolean> DISABLE_FALL_DAMAGE;
     public Option<Boolean> GOLDEN_BOW;
+    public Option<Boolean> FRAGILE_GLASS;
+    public Option<Boolean> LOW_GRAVITY;
 
     public Option<Integer> BOW_SPAWN_MIN;
     public Option<Integer> BOW_SPAWN_MAX;
@@ -44,6 +48,78 @@ public class GameOptionsManager implements IManager {
 
         OPTIONS = new HashMap<>();
         SIGN_MAP = new HashMap<>();
+    }
+
+    @Override
+    public void load() {
+        register(getClass(), MAP_SELECTION = new ArenaOption("Map Selector")
+                .setDescription("What map should the game be played on"));
+
+        register(getClass(), GAMEMODES = new GameModeOption("Gamemode Selection")
+                .setDescription("What gamemode should be played"));
+
+        register(getClass(), LIGHTING = new Option<>("Lighting", TimeType.DAY, TimeType.DAY, TimeType.NIGHT)
+                .setDescription("What time of day should the game be played at"));
+
+        register(getClass(), DISABLE_FALL_DAMAGE = new BooleanOption("No Fall Damage", false)
+                .setDescription("Should fall damage be disabled"));
+
+        register(getClass(), GOLDEN_BOW = new BooleanOption("Golden Bow", false)
+                .setDescription("When a player gets damaged by another player should it be an Insta-Kill"));
+
+        register(getClass(), FRAGILE_GLASS = new BooleanOption("Fragile Glass", false)
+                .setDescription("Glass blocks hit by arrows will be instantly destroyed"));
+
+        register(getClass(), LOW_GRAVITY = new BooleanOption("Low Gravity", false)
+                .setDescription("Jump up, jump up and get down!"));
+
+        register(getClass(), BOW_SPAWN_MIN = new IntegerOption("Bow Spawn Min", 20, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110)
+                .setDescription("The fastest a bow can spawn in a game"));
+        register(getClass(), BOW_SPAWN_MAX = new IntegerOption("Bow Spawn Max", 50, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140)
+                .setDescription("The slowest a bow can spawn in a game"));
+
+        register(getClass(), BOW_USE_MULTIPLIER = new IntegerOption("Bow Use Multiplier", 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+                .setDescription("Add more uses to special bows"));
+    }
+
+    public void loadSignLocations () {
+        DataStorage storage = PLUGIN.getDataStorage();
+
+        if (!storage.hasKey("option-signs")) return;
+
+        StorageTagList list = (StorageTagList) storage.getTag("option-signs");
+        list.getList().forEach(base -> {
+            StorageTagCompound compound = (StorageTagCompound) base;
+
+            String optionName = compound.getString("option", "");
+
+            Option option = getOptionFromName(optionName, true);
+
+            if (option == null) {
+                PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.ERROR, " Could not load option sign for '"+optionName+"' Could it not be registered?");
+                return;
+            }
+
+            SIGN_MAP.put(option, compound.getLocation("location"));
+            updateSign(option);
+        });
+    }
+
+    @Override
+    public void cleanup() {
+        OPTIONS.clear();
+
+
+        StorageTagList list = new StorageTagList();
+        SIGN_MAP.forEach((option, location) -> {
+            StorageTagCompound compound = new StorageTagCompound();
+            compound.setLocation("location", location);
+            compound.setString("option", option.getCombinedName());
+            list.appendTag(compound);
+        });
+
+        PLUGIN.getDataStorage().setTag("option-signs", list);
+        PLUGIN.getDataStorage().save();
     }
 
     public void setSign (Option option, Sign sign) {
@@ -108,68 +184,6 @@ public class GameOptionsManager implements IManager {
 
         sign.setLine(3, ChatColor.BOLD + "================");
         sign.update();
-    }
-
-    @Override
-    public void load() {
-        register(getClass(), MAP_SELECTION = new ArenaOption("Map Selector")
-                .setDescription("What map should the game be played on"));
-
-        register(getClass(), GAMEMODES = new GameModeOption("Gamemode Selection")
-                .setDescription("What gamemode should be played"));
-
-        register(getClass(), DISABLE_FALL_DAMAGE = new BooleanOption("No Fall", false)
-                .setDescription("Should fall damage be disabled"));
-        register(getClass(), GOLDEN_BOW = new BooleanOption("Golden Bow", true)
-                .setDescription("When a player gets damaged by another player should it be an Insta-Kill"));
-
-        register(getClass(), BOW_SPAWN_MIN = new IntegerOption("Bow Spawn Minimum", 20, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110)
-                .setDescription("The fastest a bow can spawn in a game"));
-        register(getClass(), BOW_SPAWN_MAX = new IntegerOption("Bow Spawn Maximum", 50, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140)
-                .setDescription("The slowest a bow can spawn in a game"));
-
-        register(getClass(), BOW_USE_MULTIPLIER = new IntegerOption("Bow Use Multiplier", 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-                .setDescription("Add more uses to special bows"));
-    }
-
-    public void loadSignLocations () {
-        DataStorage storage = PLUGIN.getDataStorage();
-
-        if (!storage.hasKey("option-signs")) return;
-
-        StorageTagList list = (StorageTagList) storage.getTag("option-signs");
-        list.getList().forEach(base -> {
-            StorageTagCompound compound = (StorageTagCompound) base;
-
-            String optionName = compound.getString("option", "");
-
-            Option option = getOptionFromName(optionName, true);
-
-            if (option == null) {
-                PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.ERROR, " Could not load option sign for '"+optionName+"' Could it not be registered?");
-                return;
-            }
-
-            SIGN_MAP.put(option, compound.getLocation("location"));
-            updateSign(option);
-        });
-    }
-
-    @Override
-    public void cleanup() {
-        OPTIONS.clear();
-
-
-        StorageTagList list = new StorageTagList();
-        SIGN_MAP.forEach((option, location) -> {
-            StorageTagCompound compound = new StorageTagCompound();
-            compound.setLocation("location", location);
-            compound.setString("option", option.getCombinedName());
-            list.appendTag(compound);
-        });
-
-        PLUGIN.getDataStorage().setTag("option-signs", list);
-        PLUGIN.getDataStorage().save();
     }
 
     /**

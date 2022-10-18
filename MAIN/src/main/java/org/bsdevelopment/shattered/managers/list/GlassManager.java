@@ -89,8 +89,8 @@ public class GlassManager implements IManager {
 
 
         if ((block.getType() == Material.GLASS)
-                || (block.getType() == Material.GLASS_PANE)) {
-                // TODO: || Options.FRAGILE_GLASS.getValue()) {
+                || (block.getType() == Material.GLASS_PANE)
+                 || Management.GAME_OPTIONS_MANAGER.FRAGILE_GLASS.getValue()) {
             block.setType(Material.AIR);
             return;
         }

@@ -8,6 +8,7 @@ import org.bsdevelopment.shattered.Shattered;
 import org.bsdevelopment.shattered.bow.ShatteredBow;
 import org.bsdevelopment.shattered.bow.data.BowInfo;
 import org.bsdevelopment.shattered.game.GameModeData;
+import org.bsdevelopment.shattered.game.GameState;
 import org.bsdevelopment.shattered.game.ShatteredPlayer;
 import org.bsdevelopment.shattered.managers.Management;
 import org.bsdevelopment.shattered.utilities.MessageType;
@@ -18,6 +19,8 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -74,6 +77,11 @@ public abstract class ShatteredGameMode {
         task = new BukkitRunnable() {
             @Override
             public void run() {
+                if (Management.GAME_MANAGER.getState() != GameState.IN_GAME) {
+                    cancel();
+                    return;
+                }
+
                 tick();
 
                 Management.GAME_MANAGER.getCurrentPlayers().forEach(shatteredPlayer -> {
@@ -195,11 +203,15 @@ public abstract class ShatteredGameMode {
      */
     public void respawnPlayer (ShatteredPlayer shatteredPlayer) {
         shatteredPlayer.fetchPlayer(player -> {
-            Location location = getSpawnLocation(shatteredPlayer).add(0.5, 1, 0.5);
+            player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
+            player.setFallDistance(0);
+
+            Location location = getSpawnLocation(shatteredPlayer).add(0.5, 0.5, 0.5);
             Location lookAt = Utilities.lookAt(location, Management.ARENA_MANAGER.getRegion().getCenter());
             player.teleport(lookAt);
             player.setHealth(20);
-            player.setFallDistance(0);
+
+            if (Management.GAME_OPTIONS_MANAGER.LOW_GRAVITY.getValue()) player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 3, true, false));
         });
     }
 
