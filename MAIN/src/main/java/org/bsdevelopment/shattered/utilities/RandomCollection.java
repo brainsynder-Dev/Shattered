@@ -1,12 +1,10 @@
 package org.bsdevelopment.shattered.utilities;
 
-import java.util.Collection;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.NavigableMap;
-import java.util.Random;
-import java.util.TreeMap;
 
 public class RandomCollection<E> {
+    private final LinkedList<E> order;
     private final NavigableMap<Double, E> map;
     private final Random random;
     private double total;
@@ -40,6 +38,7 @@ public class RandomCollection<E> {
     }
 
     public RandomCollection(Random var1) {
+        order = new LinkedList<>();
         this.map = new TreeMap();
         this.total = 0.0D;
         this.random = var1;
@@ -56,14 +55,15 @@ public class RandomCollection<E> {
 
     public void add(double percent, E value) {
         if (percent > 0.0D) {
+            order.addLast(value);
             this.total += percent;
             this.map.put(this.total, value);
         }
 
     }
 
-    public Collection<E> values() {
-        return this.map.values();
+    public LinkedList<E> values() {
+        return this.order;
     }
 
     public E next() {
@@ -88,6 +88,7 @@ public class RandomCollection<E> {
             E value = entry.getValue();
             this.total -= entry.getKey();
             this.map.remove(entry.getKey());
+            order.remove(value);
             return value;
         }
     }
