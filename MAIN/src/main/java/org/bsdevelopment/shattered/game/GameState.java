@@ -2,6 +2,7 @@ package org.bsdevelopment.shattered.game;
 
 public enum GameState {
     WAITING,
+    READY_UP(WAITING),
     COUNTDOWN(WAITING),
     IN_GAME,
     CLEANUP;

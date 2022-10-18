@@ -48,6 +48,7 @@ public class SignClickListeners implements Listener {
 
 
         if (readyCube1.isReady() && readyCube2.isReady()) {
+            Management.GAME_MANAGER.setState(GameState.READY_UP);
             // TODO: This is from the old original code implement something similar
 //            lobby.forEachPlayer(player -> {
 //                message.setHeader(" ").sendMessage(player);
