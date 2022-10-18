@@ -120,6 +120,18 @@ public class GameManager implements IManager {
 
                 gameCountdownTask = new GameCountdownTask(PLUGIN, currentGamemode);
 
+                Management.LOBBY_MANAGER.getReadyCube1().getCubePlayers().forEach(shatteredPlayer -> {
+                    shatteredPlayer.setState(ShatteredPlayer.PlayerState.IN_GAME);
+                    shatteredPlayer.setPlaying(true);
+                    if (!PLAYERS.contains(shatteredPlayer)) PLAYERS.add(shatteredPlayer);
+                });
+
+                Management.LOBBY_MANAGER.getReadyCube2().getCubePlayers().forEach(shatteredPlayer -> {
+                    shatteredPlayer.setState(ShatteredPlayer.PlayerState.IN_GAME);
+                    shatteredPlayer.setPlaying(true);
+                    if (!PLAYERS.contains(shatteredPlayer)) PLAYERS.add(shatteredPlayer);
+                });
+
                 if (PLUGIN.getSchematics().getCurrentRegion() == null) {
                     PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "No Map generated... generating...");
                     String mapTarget = Management.GAME_OPTIONS_MANAGER.MAP_SELECTION.getValue();
