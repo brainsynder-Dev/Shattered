@@ -42,6 +42,8 @@ public class FFAGameMode extends ShatteredGameMode {
 
     @Override
     public void disqualifyPlayer(ShatteredPlayer shatteredPlayer) {
+        if (!LIFE_MAP.containsKey(shatteredPlayer)) return;
+
         LIFE_MAP.remove(shatteredPlayer);
 
         broadcastMessage(getColor(shatteredPlayer)+shatteredPlayer.getName() + MessageType.SHATTERED_GRAY +" was disqualified from the game");
