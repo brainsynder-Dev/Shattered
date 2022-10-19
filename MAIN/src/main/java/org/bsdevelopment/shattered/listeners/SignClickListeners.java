@@ -41,7 +41,10 @@ public class SignClickListeners implements Listener {
         ShatteredPlayer shatteredPlayer = Management.PLAYER_MANAGER.getShatteredPlayer(event.getPlayer());
         if (shatteredPlayer.getState() != ShatteredPlayer.PlayerState.LOBBY) return;
 
-        if (Management.GAME_MANAGER.getState() != GameState.WAITING) return;
+        if (Management.GAME_MANAGER.getState() != GameState.WAITING) {
+            PLUGIN.sendPrefixedMessage(event.getPlayer(), MessageType.ERROR, "Unable to modify game options while a game is in-progress");
+            return;
+        }
 
         String optionName = sign.getPersistentDataContainer().get(Management.KEY_MANAGER.OPTION_SIGN_KEY, DataType.STRING);
 
