@@ -91,6 +91,9 @@ public abstract class ShatteredGameMode {
                     // It's getting the FastBoard object from the player, and if it doesn't exist, it's creating it. Then,
                     // it's updating the lines of the scoreboard.
                     shatteredPlayer.getOrCreateBoard(fastBoard -> {
+                        if (!fastBoard.getTitle().contains(getGameModeData().name()))
+                            fastBoard.updateTitle(Colorize.translateBungeeHex(MessageType.SHATTERED_BLUE+getGameModeData().name()));
+
                         fastBoard.updateLines(getScoreboardLines());
                     });
 
