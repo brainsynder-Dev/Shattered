@@ -95,14 +95,16 @@ public class SignClickListeners implements Listener {
 
         if (value) {
             int totalPlayers = Management.LOBBY_MANAGER.getLobbyPlayers().size();
+            if (totalPlayers > 2) {
 
-            if (readyCube1.getCubePlayers().size() == totalPlayers) {
-                readyCube2.toggleCube(true);
-                bypassCubeCount = true;
-            }
-            if (readyCube2.getCubePlayers().size() == totalPlayers) {
-                readyCube1.toggleCube(true);
-                bypassCubeCount = true;
+                if (readyCube1.getCubePlayers().size() == totalPlayers) {
+                    readyCube2.toggleCube(true);
+                    bypassCubeCount = true;
+                }
+                if (readyCube2.getCubePlayers().size() == totalPlayers) {
+                    readyCube1.toggleCube(true);
+                    bypassCubeCount = true;
+                }
             }
         }
 
