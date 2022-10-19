@@ -3,6 +3,7 @@ package org.bsdevelopment.shattered.game;
 import fr.mrmicky.fastboard.FastBoard;
 import lib.brainsynder.nbt.StorageTagCompound;
 import org.bsdevelopment.shattered.Shattered;
+import org.bsdevelopment.shattered.managers.Management;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -56,14 +57,19 @@ public class ShatteredPlayer {
      * @param spectating Whether or not the player is spectating
      */
     public void setSpectating(boolean spectating) {
+        if ((Management.GAME_MANAGER.getState() != GameState.IN_GAME)
+                || (Management.GAME_MANAGER.getCurrentGamemode() == null)
+                || (Shattered.INSTANCE.getSchematics().getCurrentRegion() == null))
+            spectating = false;
+
         this.spectating = spectating;
 
         fetchPlayer(player -> {
-            player.setGameMode(spectating ? GameMode.SPECTATOR : GameMode.ADVENTURE);
+            player.setGameMode(this.spectating ? GameMode.SPECTATOR : GameMode.ADVENTURE);
             player.getInventory().clear();
             player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
 
-            if (spectating) {
+            if (this.spectating) {
                 setState(PlayerState.SPECTATING_GAME);
                 player.teleport(Shattered.INSTANCE.getSchematics().getCurrentRegion().getCenter());
             }
