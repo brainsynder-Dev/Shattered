@@ -77,12 +77,15 @@ public class GameOptionsManager implements IManager {
         register(getClass(), SPECIAL_BOWS = new BooleanOption("Special Bows", true)
                 .setDescription("Allow the special bow types"));
 
-        register(getClass(), BOW_SPAWN_MIN = new IntegerOption("Bow Spawn Min", 20, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110)
+        register(getClass(), BOW_SPAWN_MIN = new IntegerOption("Bow Spawn Min", 20)
+                .setValueList(IntegerOption.range(10, 120, 10))
                 .setDescription("The fastest a bow can spawn in a game"));
-        register(getClass(), BOW_SPAWN_MAX = new IntegerOption("Bow Spawn Max", 50, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140)
+        register(getClass(), BOW_SPAWN_MAX = new IntegerOption("Bow Spawn Max", 50)
+                .setValueList(IntegerOption.range(20, 160, 10))
                 .setDescription("The slowest a bow can spawn in a game"));
 
-        register(getClass(), BOW_USE_MULTIPLIER = new IntegerOption("Bow Use Multiplier", 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+        register(getClass(), BOW_USE_MULTIPLIER = new IntegerOption("Bow Use Multiplier", 0)
+                .setValueList(IntegerOption.range(0, 10, 1))
                 .setDescription("Add more uses to special bows"));
     }
 
