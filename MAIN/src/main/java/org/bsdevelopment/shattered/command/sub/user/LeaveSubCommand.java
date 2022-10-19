@@ -35,16 +35,16 @@ public class LeaveSubCommand extends ShatteredSub {
             return;
         }
 
-        if (!shatteredPlayer.isPlaying()) {
-            getShattered().sendPrefixedMessage(player, MessageType.ERROR, "You are not currently in a game.");
-            return;
-        }
-
         if (shatteredPlayer.getState() == ShatteredPlayer.PlayerState.LOBBY) {
             getShattered().sendPrefixedMessage(player, MessageType.ERROR, "You are already in the lobby.");
             return;
         }
 
-        Management.GAME_MANAGER.leaveGame(shatteredPlayer, GameManager.Reason.COMMAND);
+        if ((!shatteredPlayer.isPlaying()) && (!shatteredPlayer.isSpectating())) {
+            getShattered().sendPrefixedMessage(player, MessageType.ERROR, "You are not currently in a game.");
+            return;
+        }
+
+        Management.GAME_MANAGER.leaveGame(shatteredPlayer, ConfigOption.INSTANCE.BUNGEE_MODE.getValue() ? GameManager.Reason.LOGIN_OR_OUT : GameManager.Reason.COMMAND);
     }
 }
