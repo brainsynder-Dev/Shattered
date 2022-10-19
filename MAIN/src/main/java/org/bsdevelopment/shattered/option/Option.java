@@ -28,10 +28,13 @@ public class Option<T> {
      *
      * @param collection The collection of values to be added to the list.
      */
-    public void setValueList (LinkedList<T> collection) {
+    public Option<T> setValueList (LinkedList<T> collection) {
+        VALUE_STORAGE.clear();
+
         for (T t : collection) {
             VALUE_STORAGE.addLast(t);
         }
+        return this;
     }
 
     public void setDefaultValue(T defaultValue) {
