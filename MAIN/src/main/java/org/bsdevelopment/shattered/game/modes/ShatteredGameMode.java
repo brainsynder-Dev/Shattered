@@ -191,7 +191,7 @@ public abstract class ShatteredGameMode {
     /**
      * Check if a player has won the game
      */
-    public abstract void checkForWin ();
+    public abstract boolean checkForWin ();
 
     /**
      * "This function is called when a player shoots an arrow and it hits a block."

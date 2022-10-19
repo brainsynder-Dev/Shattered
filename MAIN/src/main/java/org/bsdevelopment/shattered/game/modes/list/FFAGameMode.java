@@ -6,6 +6,7 @@ import org.bsdevelopment.shattered.game.GameState;
 import org.bsdevelopment.shattered.game.ShatteredPlayer;
 import org.bsdevelopment.shattered.game.modes.ShatteredGameMode;
 import org.bsdevelopment.shattered.managers.Management;
+import org.bsdevelopment.shattered.option.IntegerOption;
 import org.bsdevelopment.shattered.option.Option;
 import org.bsdevelopment.shattered.utilities.MessageType;
 import org.bukkit.ChatColor;
@@ -32,7 +33,9 @@ public class FFAGameMode extends ShatteredGameMode {
 
     @Override
     public void initiate() {
-        Management.GAME_OPTIONS_MANAGER.register(getClass(), LIVES = new Option<>("FFA Lives", 4));
+        Management.GAME_OPTIONS_MANAGER.register(getClass(), LIVES = new Option<>("FFA Lives", 4)
+                .setDescription("How many lives will you have in the FFA gamemode"));
+        LIVES.setValueList(IntegerOption.range(1, 20, 1));
     }
 
     @Override
@@ -71,13 +74,14 @@ public class FFAGameMode extends ShatteredGameMode {
     }
 
     @Override
-    public void checkForWin() {
-        if (LIFE_MAP.size() != 1) return;
+    public boolean checkForWin() {
+        if (LIFE_MAP.size() != 1) return false;
 
         ShatteredPlayer winner = (ShatteredPlayer) LIFE_MAP.keySet().toArray()[0];
 
         broadcastMessage(getColor(winner)+winner.getName() + MessageType.SHATTERED_GRAY +" has just won the FFA game!");
         Management.GAME_MANAGER.setState(GameState.CLEANUP);
+        return true;
     }
 
     @Override
@@ -92,9 +96,8 @@ public class FFAGameMode extends ShatteredGameMode {
             LIFE_MAP.remove(shatteredPlayer);
 
             respawn = false;
-            shatteredPlayer.setSpectating(true);
         }
-        super.onDeath(shatteredPlayer, reasons, respawn);
+        super.onDeath(shatteredPlayer, reasons, true);
 
         // Checking if the player has 1 life left. If they do, it broadcasts a message to the server.
         if (lives == 1) {
@@ -112,7 +115,7 @@ public class FFAGameMode extends ShatteredGameMode {
                 @Override
                 public void run() {
                     broadcastMessage(getColor(shatteredPlayer)+shatteredPlayer.getName() + MessageType.SHATTERED_GRAY +" was eliminated from the game");
-                    checkForWin();
+                    if (!checkForWin()) shatteredPlayer.setSpectating(true);
                 }
             }.runTaskLater(Shattered.INSTANCE, 1);
         }
