@@ -112,6 +112,7 @@ public class GameManager implements IManager {
     public void setState(GameState state) {
         if (this.state == state) return;
         this.state = state;
+        PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "Set State: "+state.name());
 
         switch (state) {
             case WAITING: break;
@@ -172,25 +173,35 @@ public class GameManager implements IManager {
                 break;
             case CLEANUP: {
                 if (gameCountdownTask != null) {
+                    PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "countdown task was not null... stopping and setting to null");
                     gameCountdownTask.cancel();
                     gameCountdownTask = null;
                 }
 
                 if (currentGamemode != null) {
+                    PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "gamemode was played, ending and setting to null");
                     currentGamemode.onEnd();
 
                     currentGamemode = null;
                 }
 
+                PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "cleaning up players (sending back to lobby)");
                 PLAYERS.forEach(shatteredPlayer -> {
                     shatteredPlayer.removeBoard();
 
                     Management.LOBBY_MANAGER.joinLobby(shatteredPlayer);
                 });
 
+                PLAYERS.clear();
+
+                PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "Resetting blocks");
                 Management.GLASS_MANAGER.resetBlocks();
+                PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "Attempting to reset map region");
                 PLUGIN.getSchematics().resetRegion(() -> {
+                    PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "Map region has been reset");
+                    PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "Toggle ReadyCube1 to: false");
                     Management.LOBBY_MANAGER.getReadyCube1().toggleCube(false);
+                    PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "Toggle ReadyCube2 to: false");
                     Management.LOBBY_MANAGER.getReadyCube2().toggleCube(false);
 
                     setState(GameState.WAITING);
