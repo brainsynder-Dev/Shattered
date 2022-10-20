@@ -22,6 +22,7 @@ public class StarterBow extends ShatteredBow {
     public ItemStack getItem() {
         ItemStack item = new ItemStack(Material.BOW, 1);
         item.addEnchantment(Enchantment.ARROW_INFINITE, 1);
+        item.addEnchantment(Enchantment.ARROW_KNOCKBACK, 1);
 
         ItemMeta meta = Objects.requireNonNull(item.getItemMeta());
         meta.setDisplayName(Colorize.translateBungeeHex(MessageType.SHATTERED_BLUE + "Bow"));
