@@ -4,6 +4,7 @@ import org.bsdevelopment.shattered.Shattered;
 import org.bsdevelopment.shattered.api.ShatteredAddon;
 import org.bsdevelopment.shattered.bow.list.StarterBow;
 import org.bsdevelopment.shattered.events.core.GamemodeRegisterEvent;
+import org.bsdevelopment.shattered.events.gamemode.GamemodeEndEvent;
 import org.bsdevelopment.shattered.events.gamemode.GamemodePostStartEvent;
 import org.bsdevelopment.shattered.events.gamemode.GamemodePreStartEvent;
 import org.bsdevelopment.shattered.game.GameModeData;
@@ -185,6 +186,7 @@ public class GameManager implements IManager {
                 if (currentGamemode != null) {
                     PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "gamemode was played, ending and setting to null");
                     currentGamemode.onEnd();
+                    ShatteredUtilities.fireShatteredEvent(new GamemodeEndEvent(currentGamemode));
 
                     currentGamemode = null;
                 }
