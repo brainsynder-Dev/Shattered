@@ -7,6 +7,7 @@ import net.md_5.bungee.api.ChatColor;
 import org.bsdevelopment.shattered.Shattered;
 import org.bsdevelopment.shattered.bow.ShatteredBow;
 import org.bsdevelopment.shattered.bow.data.BowInfo;
+import org.bsdevelopment.shattered.events.player.PlayerRespawnEvent;
 import org.bsdevelopment.shattered.game.GameModeData;
 import org.bsdevelopment.shattered.game.GameState;
 import org.bsdevelopment.shattered.game.ShatteredPlayer;
@@ -221,6 +222,7 @@ public abstract class ShatteredGameMode {
 
             if (Management.GAME_OPTIONS_MANAGER.LOW_GRAVITY.getValue()) player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 3, true, false));
         });
+        ShatteredUtilities.fireShatteredEvent(new PlayerRespawnEvent(shatteredPlayer, this));
     }
 
     /**
