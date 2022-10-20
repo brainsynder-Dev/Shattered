@@ -6,6 +6,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bsdevelopment.shattered.Shattered;
+import org.bsdevelopment.shattered.events.lobby.GameOptionChangeEvent;
 import org.bsdevelopment.shattered.game.GameState;
 import org.bsdevelopment.shattered.game.ShatteredPlayer;
 import org.bsdevelopment.shattered.game.modes.ShatteredGameMode;
@@ -14,6 +15,7 @@ import org.bsdevelopment.shattered.managers.list.lobby.ReadyCube;
 import org.bsdevelopment.shattered.option.GameModeOption;
 import org.bsdevelopment.shattered.option.Option;
 import org.bsdevelopment.shattered.utilities.MessageType;
+import org.bsdevelopment.shattered.utilities.ShatteredUtilities;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -49,6 +51,8 @@ public class SignClickListeners implements Listener {
         String optionName = sign.getPersistentDataContainer().get(Management.KEY_MANAGER.OPTION_SIGN_KEY, DataType.STRING);
 
         Option<?> option = Management.GAME_OPTIONS_MANAGER.getOptionFromName(optionName, true);
+
+        if (ShatteredUtilities.fireShatteredCancelEvent(new GameOptionChangeEvent(shatteredPlayer, option))) return;
 
         if (event.getPlayer().isSneaking()) {
             option.previous();
