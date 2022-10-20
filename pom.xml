@@ -24,7 +24,7 @@
     </modules>
 
     <properties>
-        <module.version>3.0-BETA-7</module.version>
+        <module.version>3.0-BETA-8</module.version>
         <module.info>-parent</module.info>
 
         <jenkins.name>Shattered</jenkins.name>

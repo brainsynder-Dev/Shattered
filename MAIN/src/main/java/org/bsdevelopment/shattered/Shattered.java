@@ -31,6 +31,8 @@ public class Shattered extends JavaPlugin {
     private File ADDONS_FOLDER;
     private SchematicUtil SCHEMATICS;
 
+    private ShatteredCommand mainCommand;
+
     @Override
     public void onEnable() {
         INSTANCE = this;
@@ -59,7 +61,7 @@ public class Shattered extends JavaPlugin {
 
         CommandRegistry<Shattered> registry = new CommandRegistry<>(this);
         try {
-            registry.register(new ShatteredCommand(this));
+            registry.register(mainCommand = new ShatteredCommand(this));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -101,6 +103,10 @@ public class Shattered extends JavaPlugin {
     public void reload() {
         SCHEMATICS = new SchematicUtil(dataStorage.getLocation("arena-location", null), this);
         SCHEMATICS.loadMapFiles();
+    }
+
+    public ShatteredCommand getMainCommand() {
+        return mainCommand;
     }
 
     public File getSchematicsFolder() {

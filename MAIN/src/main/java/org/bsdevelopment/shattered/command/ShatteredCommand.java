@@ -2,9 +2,11 @@ package org.bsdevelopment.shattered.command;
 
 import com.google.common.collect.Lists;
 import lib.brainsynder.commands.ParentCommand;
+import lib.brainsynder.commands.SubCommand;
 import lib.brainsynder.commands.annotations.ICommand;
 import lib.brainsynder.utils.ListPager;
 import org.bsdevelopment.shattered.Shattered;
+import org.bsdevelopment.shattered.api.ShatteredAddon;
 import org.bsdevelopment.shattered.command.annotations.Permission;
 import org.bsdevelopment.shattered.command.sub.admin.*;
 import org.bsdevelopment.shattered.command.sub.user.GameStatsSubCommand;
@@ -12,6 +14,8 @@ import org.bsdevelopment.shattered.command.sub.user.HelpSubCommand;
 import org.bsdevelopment.shattered.command.sub.user.JoinSubCommand;
 import org.bsdevelopment.shattered.command.sub.user.LeaveSubCommand;
 import org.bsdevelopment.shattered.files.options.ConfigOption;
+import org.bsdevelopment.shattered.utilities.MessageType;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -41,25 +45,6 @@ public class ShatteredCommand extends ParentCommand<ShatteredSub> {
         registerSub(new MapSubCommand(shattered));
         registerSub(new ReloadSubCommand(shattered));
         registerSub(new AdminSubCommand(shattered));
-
-//        registerSub(new StartSubCommand(gameManager));
-//        registerSub(new EndSubCommand(gameManager));
-//        registerSub(new CreateSubCommand(gameManager));
-//        registerSub(new AddBowSubCommand(gameManager));
-//        registerSub(new BowSubCommand(gameManager));
-//        registerSub(new AddArenaFloorSubCommand(gameManager));
-//        registerSub(new AddLobbyFloorSubCommand(gameManager));
-//        registerSub(new LobbySubCommand(gameManager));
-//        registerSub(new DisableSubCommand(gameManager));
-//        registerSub(new ResetSubCommand(gameManager));
-//
-//        registerSub(new SpectatorSubCommand(gameManager));
-//        //registerSub(new SetTeamSubCommand(gameManager));
-//        registerSub(new ListSubCommand(gameManager));
-//        //registerSub(new LeaveSubCommand(gameManager));
-//        registerSub(new StatsSubCommand(gameManager));
-//        registerSub(new ArenaRegionSubCommand (gameManager));
-//        registerSub(new TestSubCommand (gameManager));
     }
 
     public void fillPager (CommandSender sender, Consumer<ListPager<ShatteredSub>> consumer) {
@@ -81,6 +66,18 @@ public class ShatteredCommand extends ParentCommand<ShatteredSub> {
 
         listPager.addAll(adminCommands);
         consumer.accept(listPager);
+    }
+
+    public void registerSub(ShatteredAddon addon, ShatteredSub subCommand) {
+        Shattered.INSTANCE.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "  Registered sub-command '/shattered "+MessageType.SHATTERED_GREEN+subCommand.getCommand(subCommand.getClass()).name()+MessageType.SHATTERED_GRAY+"' from the addon: "+MessageType.SHATTERED_GREEN+addon.getNamespace().namespace());
+        for (SubCommand sub : getSubCommands()) {
+            String name = sub.getCommand(sub.getClass()).name();
+            if (name.equalsIgnoreCase(subCommand.getCommand(subCommand.getClass()).name())) {
+                Shattered.INSTANCE.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "  FAILED to register sub-command '/shattered "+MessageType.SHATTERED_GREEN+subCommand.getCommand(subCommand.getClass()).name()+MessageType.SHATTERED_GRAY+"' from the "+MessageType.SHATTERED_GREEN+addon.getNamespace().namespace()+MessageType.SHATTERED_GRAY+" addon (The command was already registered)");
+                return;
+            }
+        }
+        super.registerSub(subCommand);
     }
 
     @Override
