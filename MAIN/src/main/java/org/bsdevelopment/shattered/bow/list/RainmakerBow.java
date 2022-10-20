@@ -38,7 +38,7 @@ public class RainmakerBow extends ShatteredBow implements AirTask {
         if (fires < 2) fires++;
 
         if (fires >= 2) {
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < 6; i++) {
                 float x = MathUtils.random(-1, 1);
                 float z = MathUtils.random(-1, 1);
 
