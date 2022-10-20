@@ -1,11 +1,13 @@
 package org.bsdevelopment.shattered.listeners;
 
+import lib.brainsynder.utils.Cuboid;
 import org.bsdevelopment.shattered.Shattered;
 import org.bsdevelopment.shattered.game.ShatteredPlayer;
 import org.bsdevelopment.shattered.managers.Management;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -15,6 +17,14 @@ public class OtherEventListener implements Listener {
 
     public OtherEventListener(Shattered plugin) {
         PLUGIN = plugin;
+    }
+
+    @EventHandler
+    public void onSpawn (CreatureSpawnEvent event) {
+        Cuboid region = PLUGIN.getSchematics().getCurrentRegion();
+        if (region == null) return;
+        if (!region.contains(event.getLocation().getBlock())) return;
+        event.setCancelled(true);
     }
 
     @EventHandler
