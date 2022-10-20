@@ -4,6 +4,8 @@ import org.bsdevelopment.shattered.Shattered;
 import org.bsdevelopment.shattered.api.ShatteredAddon;
 import org.bsdevelopment.shattered.bow.list.StarterBow;
 import org.bsdevelopment.shattered.events.core.GamemodeRegisterEvent;
+import org.bsdevelopment.shattered.events.gamemode.GamemodePostStartEvent;
+import org.bsdevelopment.shattered.events.gamemode.GamemodePreStartEvent;
 import org.bsdevelopment.shattered.game.GameModeData;
 import org.bsdevelopment.shattered.game.GameState;
 import org.bsdevelopment.shattered.game.ShatteredPlayer;
@@ -152,6 +154,7 @@ public class GameManager implements IManager {
             case IN_GAME:
                 gameCountdownTask = null;
 
+                ShatteredUtilities.fireShatteredEvent(new GamemodePreStartEvent(currentGamemode));
                 PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "GameMode.start()");
                 currentGamemode.start();
 
@@ -170,6 +173,7 @@ public class GameManager implements IManager {
                         currentGamemode.respawnPlayer(shatteredPlayer);
                     });
                 });
+                ShatteredUtilities.fireShatteredEvent(new GamemodePostStartEvent(currentGamemode));
                 break;
             case CLEANUP: {
                 if (gameCountdownTask != null) {
