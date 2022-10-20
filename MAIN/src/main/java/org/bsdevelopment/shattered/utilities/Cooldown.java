@@ -3,14 +3,18 @@ package org.bsdevelopment.shattered.utilities;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class Cooldown {
     private final HashMap<String, Long> MAP = new HashMap<>();
-    private final int WAIT_TIME;
+    private final long WAIT_TIME;
 
-    public Cooldown(int waitTime) {
+    public Cooldown(long waitTime) {
         this.WAIT_TIME = waitTime;
+    }
+    public Cooldown(long waitTime, TimeUnit unit) {
+        this (unit.toSeconds(waitTime));
     }
 
     public boolean hasCooldown(Player player, Consumer<Long> consumer) {

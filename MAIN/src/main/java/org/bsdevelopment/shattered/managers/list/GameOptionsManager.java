@@ -37,6 +37,7 @@ public class GameOptionsManager implements IManager {
     public Option<Boolean> FRAGILE_GLASS;
     public Option<Boolean> LOW_GRAVITY;
     public Option<Boolean> SPECIAL_BOWS;
+    public Option<Boolean> BOW_JUMPER;
 
     public Option<Integer> BOW_SPAWN_MIN;
     public Option<Integer> BOW_SPAWN_MAX;
@@ -62,6 +63,9 @@ public class GameOptionsManager implements IManager {
         register(getClass(), LIGHTING = new Option<>("Lighting", TimeType.DAY, TimeType.DAY, TimeType.NIGHT)
                 .setDescription("What time of day should the game be played at"));
 
+
+
+
         register(getClass(), DISABLE_FALL_DAMAGE = new BooleanOption("No Fall Damage", false)
                 .setDescription("Should fall damage be disabled"));
 
@@ -76,6 +80,12 @@ public class GameOptionsManager implements IManager {
 
         register(getClass(), SPECIAL_BOWS = new BooleanOption("Special Bows", true)
                 .setDescription("Allow the special bow types"));
+
+        register(getClass(), BOW_JUMPER = new BooleanOption("Bow Jumper", false)
+                .setDescription("Left click a bow and it will jump you higher than before"));
+
+
+
 
         register(getClass(), BOW_SPAWN_MIN = new IntegerOption("Bow Spawn Min", 20)
                 .setValueList(IntegerOption.range(10, 120, 10))

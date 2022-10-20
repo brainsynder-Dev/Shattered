@@ -7,11 +7,15 @@ import org.bsdevelopment.shattered.bow.annotations.UnbreakableGlass;
 import org.bsdevelopment.shattered.bow.data.BowForce;
 import org.bsdevelopment.shattered.bow.data.BowInfo;
 import org.bsdevelopment.shattered.bow.tasks.*;
+import org.bsdevelopment.shattered.game.GameState;
+import org.bsdevelopment.shattered.game.ShatteredPlayer;
 import org.bsdevelopment.shattered.game.modes.ShatteredGameMode;
 import org.bsdevelopment.shattered.managers.Management;
 import org.bsdevelopment.shattered.utilities.BowInfoPersistentData;
+import org.bsdevelopment.shattered.utilities.Cooldown;
 import org.bsdevelopment.shattered.utilities.ShatteredUtilities;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
@@ -19,18 +23,47 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class BowArrowListener implements Listener {
     private final Shattered PLUGIN;
+    private final Cooldown JUMP_COOLDOWN;
 
     public BowArrowListener(Shattered plugin) {
         PLUGIN = plugin;
+
+        JUMP_COOLDOWN = new Cooldown(5, TimeUnit.SECONDS);
     }
 
+    @EventHandler
+    public void onBowJump (PlayerInteractEvent event) {
+        if (!event.hasItem()) return;
+        if (!event.getAction().name().contains("LEFT")) return;
+        if (Management.GAME_MANAGER.getState() != GameState.IN_GAME) return;
+        Player player = event.getPlayer();
+        ShatteredPlayer shatteredPlayer = Management.PLAYER_MANAGER.getShatteredPlayer(player);
+        if (!shatteredPlayer.isPlaying()) return;
+        if (!Management.GAME_OPTIONS_MANAGER.BOW_JUMPER.getValue()) return;
+
+        ItemStack item = event.getItem();
+        if (!item.hasItemMeta()) return;
+
+        ShatteredBow bow = Management.BOW_MANAGER.getBow(Objects.requireNonNull(item));
+        if (bow == null) return;
+
+        // already double jumped withing the previous seconds
+        if (JUMP_COOLDOWN.hasCooldown(player, aLong -> {})) return;
+
+        JUMP_COOLDOWN.activateCooldown(player);
+        player.setVelocity(player.getLocation().getDirection().multiply(0.75).setY(1));
+        player.playSound(player.getLocation(), Sound.ENTITY_BAT_TAKEOFF, 1.0f, -5.0f);
+    }
 
     @EventHandler
     public void onBowShoot (EntityShootBowEvent event) {
