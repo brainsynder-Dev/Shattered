@@ -6,7 +6,7 @@ import org.bsdevelopment.shattered.api.ShatteredAddon;
 import org.bsdevelopment.shattered.bow.ShatteredBow;
 import org.bsdevelopment.shattered.bow.annotations.BowData;
 import org.bsdevelopment.shattered.bow.list.*;
-import org.bsdevelopment.shattered.events.core.BowRegisterEvent;
+import org.bsdevelopment.shattered.events.core.ShatteredBowRegisterEvent;
 import org.bsdevelopment.shattered.managers.IManager;
 import org.bsdevelopment.shattered.managers.Management;
 import org.bsdevelopment.shattered.utilities.MessageType;
@@ -69,7 +69,7 @@ public class BowManager implements IManager {
 
         BOWS_MAP.put(key, list);
 
-        ShatteredUtilities.fireShatteredEvent(new BowRegisterEvent(bow));
+        ShatteredUtilities.fireShatteredEvent(new ShatteredBowRegisterEvent(bow));
     }
 
     public void unregisterBows (ShatteredAddon addon) {

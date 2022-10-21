@@ -3,10 +3,10 @@ package org.bsdevelopment.shattered.managers.list;
 import org.bsdevelopment.shattered.Shattered;
 import org.bsdevelopment.shattered.api.ShatteredAddon;
 import org.bsdevelopment.shattered.bow.list.StarterBow;
-import org.bsdevelopment.shattered.events.core.GamemodeRegisterEvent;
-import org.bsdevelopment.shattered.events.gamemode.GamemodeEndEvent;
-import org.bsdevelopment.shattered.events.gamemode.GamemodePostStartEvent;
-import org.bsdevelopment.shattered.events.gamemode.GamemodePreStartEvent;
+import org.bsdevelopment.shattered.events.core.ShatteredGamemodeRegisterEvent;
+import org.bsdevelopment.shattered.events.gamemode.ShatteredGamemodeEndEvent;
+import org.bsdevelopment.shattered.events.gamemode.ShatteredGamemodePostStartEvent;
+import org.bsdevelopment.shattered.events.gamemode.ShatteredGamemodePreStartEvent;
 import org.bsdevelopment.shattered.game.GameModeData;
 import org.bsdevelopment.shattered.game.GameState;
 import org.bsdevelopment.shattered.game.ShatteredPlayer;
@@ -155,7 +155,7 @@ public class GameManager implements IManager {
             case IN_GAME:
                 gameCountdownTask = null;
 
-                ShatteredUtilities.fireShatteredEvent(new GamemodePreStartEvent(currentGamemode));
+                ShatteredUtilities.fireShatteredEvent(new ShatteredGamemodePreStartEvent(currentGamemode));
                 PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "GameMode.start()");
                 currentGamemode.start();
 
@@ -174,7 +174,7 @@ public class GameManager implements IManager {
                         currentGamemode.respawnPlayer(shatteredPlayer);
                     });
                 });
-                ShatteredUtilities.fireShatteredEvent(new GamemodePostStartEvent(currentGamemode));
+                ShatteredUtilities.fireShatteredEvent(new ShatteredGamemodePostStartEvent(currentGamemode));
                 break;
             case CLEANUP: {
                 if (gameCountdownTask != null) {
@@ -186,7 +186,7 @@ public class GameManager implements IManager {
                 if (currentGamemode != null) {
                     PLUGIN.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "gamemode was played, ending and setting to null");
                     currentGamemode.onEnd();
-                    ShatteredUtilities.fireShatteredEvent(new GamemodeEndEvent(currentGamemode));
+                    ShatteredUtilities.fireShatteredEvent(new ShatteredGamemodeEndEvent(currentGamemode));
 
                     currentGamemode = null;
                 }
@@ -225,7 +225,7 @@ public class GameManager implements IManager {
      * @param gameMode The gamemode to register.
      */
     public void registerGamemode (ShatteredAddon addon, ShatteredGameMode gameMode) {
-        registerGamemode0(addon.getNamespace().namespace(), gameMode, GamemodeRegisterEvent.Type.ADDON);
+        registerGamemode0(addon.getNamespace().namespace(), gameMode, ShatteredGamemodeRegisterEvent.Type.ADDON);
         Shattered.INSTANCE.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "Registered gamemode '"+MessageType.SHATTERED_GREEN+gameMode.getGameModeData().name()+MessageType.SHATTERED_GRAY+"' from the addon: "+MessageType.SHATTERED_GREEN+addon.getNamespace().namespace());
     }
 
@@ -236,7 +236,7 @@ public class GameManager implements IManager {
      * @param gameMode The gamemode to register
      */
     private void registerGamemode (Plugin plugin, ShatteredGameMode gameMode) {
-        registerGamemode0(plugin.getDescription().getName(), gameMode, GamemodeRegisterEvent.Type.PLUGIN);
+        registerGamemode0(plugin.getDescription().getName(), gameMode, ShatteredGamemodeRegisterEvent.Type.PLUGIN);
 
         if (gameMode instanceof Listener listener) PLUGIN_MANAGER.registerEvents(listener, plugin);
     }
@@ -248,7 +248,7 @@ public class GameManager implements IManager {
      * @param gameMode The GameMode to register
      * @param type The type of gamemode.
      */
-    private void registerGamemode0 (String key, ShatteredGameMode gameMode, GamemodeRegisterEvent.Type type) {
+    private void registerGamemode0 (String key, ShatteredGameMode gameMode, ShatteredGamemodeRegisterEvent.Type type) {
         LinkedList<ShatteredGameMode> list = GAMEMODES_MAP.getOrDefault(key, new LinkedList<>());
         list.addLast(gameMode);
         RANDOM_GAMEMODES.add(gameMode);
@@ -256,7 +256,7 @@ public class GameManager implements IManager {
 
         gameMode.initiate();
 
-        ShatteredUtilities.fireShatteredEvent(new GamemodeRegisterEvent(new GamemodeRegisterEvent.Culprit(type, key), gameMode));
+        ShatteredUtilities.fireShatteredEvent(new ShatteredGamemodeRegisterEvent(new ShatteredGamemodeRegisterEvent.Culprit(type, key), gameMode));
 
         Management.GAME_OPTIONS_MANAGER.GAMEMODES.setValueList(RANDOM_GAMEMODES.values());
     }

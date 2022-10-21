@@ -20,8 +20,8 @@ import lib.brainsynder.utils.AdvString;
 import lib.brainsynder.utils.BlockLocation;
 import lib.brainsynder.utils.Cuboid;
 import org.bsdevelopment.shattered.Shattered;
-import org.bsdevelopment.shattered.events.core.MapClearEvent;
-import org.bsdevelopment.shattered.events.core.MapGenerateEvent;
+import org.bsdevelopment.shattered.events.core.ShatteredMapClearEvent;
+import org.bsdevelopment.shattered.events.core.ShatteredMapGenerateEvent;
 import org.bsdevelopment.shattered.managers.Management;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -173,7 +173,7 @@ public class SchematicUtil {
                 new BukkitRunnable() {
                     @Override
                     public void run() {
-                        ShatteredUtilities.fireShatteredEvent(new MapClearEvent(regionCopy));
+                        ShatteredUtilities.fireShatteredEvent(new ShatteredMapClearEvent(regionCopy));
                         runnable.run();
                     }
                 }.runTask(PLUGIN);
@@ -220,7 +220,7 @@ public class SchematicUtil {
                         @Override
                         public void run() {
                             Management.ARENA_MANAGER.fromSchematicRegion(currentRegion);
-                            ShatteredUtilities.fireShatteredEvent(new MapGenerateEvent(currentRegion));
+                            ShatteredUtilities.fireShatteredEvent(new ShatteredMapGenerateEvent(currentRegion));
                             runnable.run();
                         }
                     }.runTask(PLUGIN);

@@ -2,7 +2,7 @@ package org.bsdevelopment.shattered.utilities;
 
 import lib.brainsynder.nms.TitleMessage;
 import org.bsdevelopment.shattered.Shattered;
-import org.bsdevelopment.shattered.events.core.GameCountdownEvent;
+import org.bsdevelopment.shattered.events.core.ShatteredGameCountdownEvent;
 import org.bsdevelopment.shattered.files.options.ConfigOption;
 import org.bsdevelopment.shattered.game.GameState;
 import org.bsdevelopment.shattered.game.modes.ShatteredGameMode;
@@ -32,7 +32,7 @@ public class GameCountdownTask extends BukkitRunnable {
     @Override
     public void run() {
         time--;
-        ShatteredUtilities.fireShatteredEvent(new GameCountdownEvent(time, GAMEMODE));
+        ShatteredUtilities.fireShatteredEvent(new ShatteredGameCountdownEvent(time, GAMEMODE));
 
         switch (time) {
             case 80, 70, 60, 50, 40, 30, 20, 10, 5, 4, 3, 2, 1 -> {

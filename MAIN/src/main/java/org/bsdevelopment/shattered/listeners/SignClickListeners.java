@@ -6,7 +6,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bsdevelopment.shattered.Shattered;
-import org.bsdevelopment.shattered.events.lobby.GameOptionChangeEvent;
+import org.bsdevelopment.shattered.events.lobby.ShatteredGameOptionChangeEvent;
 import org.bsdevelopment.shattered.game.GameState;
 import org.bsdevelopment.shattered.game.ShatteredPlayer;
 import org.bsdevelopment.shattered.game.modes.ShatteredGameMode;
@@ -52,7 +52,7 @@ public class SignClickListeners implements Listener {
 
         Option<?> option = Management.GAME_OPTIONS_MANAGER.getOptionFromName(optionName, true);
 
-        if (ShatteredUtilities.fireShatteredCancelEvent(new GameOptionChangeEvent(shatteredPlayer, option))) return;
+        if (ShatteredUtilities.fireShatteredCancelEvent(new ShatteredGameOptionChangeEvent(shatteredPlayer, option))) return;
 
         if (event.getPlayer().isSneaking()) {
             option.previous();

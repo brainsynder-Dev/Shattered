@@ -1,7 +1,7 @@
 package org.bsdevelopment.shattered.game.modes.list;
 
 import org.bsdevelopment.shattered.Shattered;
-import org.bsdevelopment.shattered.events.player.PlayerEliminatedEvent;
+import org.bsdevelopment.shattered.events.player.ShatteredPlayerEliminatedEvent;
 import org.bsdevelopment.shattered.game.GameModeData;
 import org.bsdevelopment.shattered.game.GameState;
 import org.bsdevelopment.shattered.game.ShatteredPlayer;
@@ -116,7 +116,7 @@ public class FFAGameMode extends ShatteredGameMode {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    ShatteredUtilities.fireShatteredEvent(new PlayerEliminatedEvent(shatteredPlayer, FFAGameMode.this));
+                    ShatteredUtilities.fireShatteredEvent(new ShatteredPlayerEliminatedEvent(shatteredPlayer, FFAGameMode.this));
                     broadcastMessage(getColor(shatteredPlayer)+shatteredPlayer.getName() + MessageType.SHATTERED_GRAY +" was eliminated from the game");
                     if (!checkForWin()) shatteredPlayer.setSpectating(true);
                 }
