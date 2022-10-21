@@ -7,6 +7,8 @@ import net.md_5.bungee.api.ChatColor;
 import org.bsdevelopment.shattered.Shattered;
 import org.bsdevelopment.shattered.bow.ShatteredBow;
 import org.bsdevelopment.shattered.bow.data.BowInfo;
+import org.bsdevelopment.shattered.events.player.PlayerDeathByPlayerEvent;
+import org.bsdevelopment.shattered.events.player.PlayerDeathEvent;
 import org.bsdevelopment.shattered.events.player.PlayerRespawnEvent;
 import org.bsdevelopment.shattered.game.GameModeData;
 import org.bsdevelopment.shattered.game.GameState;
@@ -283,6 +285,7 @@ public abstract class ShatteredGameMode {
 
         if (respawn) {
             broadcastMessage(getColor(shatteredPlayer) + shatteredPlayer.getName()+MessageType.SHATTERED_GRAY+" was killed by "+MessageType.SHATTERED_BLUE+reasons.name());
+            ShatteredUtilities.fireShatteredEvent(new PlayerDeathEvent(shatteredPlayer, this, reasons));
             checkForWin();
         }
 
@@ -299,6 +302,7 @@ public abstract class ShatteredGameMode {
         onDeath(victim, DeathReasons.PLAYER, respawn);
 
         broadcastMessage(getColor(victim) + victim.getName()+MessageType.SHATTERED_GRAY+" was killed by "+getColor(killer)+killer.getName());
+        ShatteredUtilities.fireShatteredEvent(new PlayerDeathByPlayerEvent(victim, this, DeathReasons.PLAYER, killer));
     }
 
     /**
