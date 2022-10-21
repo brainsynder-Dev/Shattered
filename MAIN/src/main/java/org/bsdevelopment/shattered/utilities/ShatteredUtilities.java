@@ -68,8 +68,9 @@ public class ShatteredUtilities {
      *
      * @param event The event to fire.
      */
-    public static void fireShatteredEvent(ShatteredEvent event) {
+    public static <E extends ShatteredEvent> E fireShatteredEvent(E event) {
         PLUGIN_MANAGER.callEvent(event);
+        return event;
     }
 
     /**
