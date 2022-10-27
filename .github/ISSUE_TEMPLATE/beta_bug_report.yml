@@ -1,0 +1,30 @@
+name: 🐞 Beta Test Bug Report
+description: Found an issue while beta-testing on the server
+title: "[Beta-Bug]: ???"
+labels: ["Type: Beta Test Bug"]
+assignees:
+  - brainsynder-Dev
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: |
+        Also tell us, what did you expect to happen? [ REQUIRED ]
+
+        Tip: You can attach screenshots or video files by clicking this area to highlight it and then dragging files in.
+      placeholder: A bug happened!
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Steps To Reproduce
+      description: How can this be reproduced [ not required ]
+      placeholder: |
+        1.
+        2.
+        3.
+        ...
+    validations:
+      required: false
