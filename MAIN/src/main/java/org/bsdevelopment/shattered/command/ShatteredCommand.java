@@ -18,14 +18,20 @@ import org.bsdevelopment.shattered.utilities.MessageType;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 @ICommand(name = "shattered")
 public class ShatteredCommand extends ParentCommand<ShatteredSub> {
     private final HelpSubCommand HELP_COMMAND;
+    private final Map<ShatteredAddon, List<ShatteredSub>> ADDON_SUB_COMMANDS;
 
     public ShatteredCommand(Shattered shattered) {
+        ADDON_SUB_COMMANDS = new HashMap<>();
+
         // User Commands
         registerSub(new GameStatsSubCommand(shattered));
         registerSub(HELP_COMMAND= new HelpSubCommand(shattered, this));
@@ -77,7 +83,23 @@ public class ShatteredCommand extends ParentCommand<ShatteredSub> {
                 return;
             }
         }
+
+        List<ShatteredSub> subCommands = ADDON_SUB_COMMANDS.getOrDefault(addon, new ArrayList<>());
+        subCommands.add(subCommand);
+        ADDON_SUB_COMMANDS.put(addon, subCommands);
+
         super.registerSub(subCommand);
+    }
+
+    public void unregisterCommands (ShatteredAddon addon) {
+        ADDON_SUB_COMMANDS.getOrDefault(addon, new ArrayList<>()).forEach(shatteredSub -> {
+            String name = shatteredSub.getCommand(shatteredSub.getClass()).name();
+            Shattered.INSTANCE.sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.DEBUG, "  Unregistered sub-command '/shattered "+MessageType.SHATTERED_GREEN+name);
+
+            getSubCommands().remove(shatteredSub);
+        });
+
+        ADDON_SUB_COMMANDS.remove(addon);
     }
 
     @Override
