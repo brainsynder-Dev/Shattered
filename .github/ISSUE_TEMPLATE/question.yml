@@ -1,0 +1,37 @@
+name: ❓ Simple Question
+description: You have a question you would like answered
+title: "[Question]: "
+labels: ["Type: Question"]
+assignees:
+  - brainsynder-Dev
+body:
+  - type: markdown
+    attributes:
+      value: |
+        <div align="center">So you have a question you would like to answered? Perfect fill out the info below and we will look at getting you some answers.</div>
+
+  - type: dropdown
+    id: plugin-related
+    attributes:
+      label: Question Topic
+      description: What kind of topic we talking about?
+      options:
+        - "BetaTest"
+        - "Gameplay"
+        - "Config"
+        - "Plugin"
+        - "API/Code"
+    validations:
+      required: true
+
+  - type: textarea
+    id: request
+    attributes:
+      label: What is your question?
+      description: |
+        In the area below please put your question. [ REQUIRED ]
+
+        Tip: You can attach images or files by clicking this area to highlight it and then dragging files in.
+      placeholder: I have a question!
+    validations:
+      required: true
