@@ -55,16 +55,16 @@ public class Shattered extends JavaPlugin {
         SCHEMATICS = new SchematicUtil(dataStorage.getLocation("arena-location", null), this);
         SCHEMATICS.loadMapFiles();
 
-        Management.initiate(this);
-
-        registerListeners();
-
         CommandRegistry<Shattered> registry = new CommandRegistry<>(this);
         try {
             registry.register(mainCommand = new ShatteredCommand(this));
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        Management.initiate(this);
+
+        registerListeners();
 
         new BukkitRunnable() {
             @Override
