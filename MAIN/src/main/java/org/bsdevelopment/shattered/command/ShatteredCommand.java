@@ -61,11 +61,11 @@ public class ShatteredCommand extends ParentCommand<ShatteredSub> {
         getSubCommands().forEach(sub -> {
             if (sub.getClass().isAnnotationPresent(Permission.class)) {
                 Permission permission = sub.getClass().getAnnotation(Permission.class);
-                if (permission.adminCommand() && sender.hasPermission(permission.permission())) {
+                if (permission.adminCommand() && sub.canExecute(sender)) {
                     adminCommands.add(sub);
                     return;
                 }
-                if (!permission.defaultAllow() && !sender.hasPermission(permission.permission())) return;
+                if (!sub.canExecute(sender)) return;
             }
             listPager.add(sub);
         });

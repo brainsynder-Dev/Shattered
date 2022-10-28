@@ -18,9 +18,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.File;
 
 @ICommand(name = "map")
-@AdditionalUsage(name = "generate", usage = "<schematic-file-name>", description = "Generates the selected map schematic as the arena location")
-@AdditionalUsage(name = "reset", description = "Resets the map based on the previous region")
-@AdditionalUsage(name = "highlight", description = "Highlights all key locations in the map")
+@AdditionalUsage(name = "generate", usage = "<schematic-file-name>", description = "Generates the selected map schematic as the arena location", checkPermission = true)
+@AdditionalUsage(name = "reset", description = "Resets the map based on the previous region", checkPermission = true)
+@AdditionalUsage(name = "highlight", description = "Highlights all key locations in the map", checkPermission = true)
 @Permission(permission = "mapgen", adminCommand = true, additionalPermissions = {"generate", "reset", "highlight"})
 public class MapSubCommand extends ShatteredSub {
     private final Cooldown COOLDOWN;

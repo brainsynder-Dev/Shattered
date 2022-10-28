@@ -11,6 +11,5 @@ public @interface Permission {
     String permission() default "";
     String[] additionalPermissions() default {""};
 
-    boolean defaultAllow() default false;
     boolean adminCommand() default false;
 }

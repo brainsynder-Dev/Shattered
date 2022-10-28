@@ -15,8 +15,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 @ICommand(name = "bridge")
-@AdditionalUsage(name = "add", description = "Adds your current WorldEdit selection as a particle bridge")
-@AdditionalUsage(name = "remove", description = "Removes the targeted region from being a particle bridge")
+@AdditionalUsage(name = "add", description = "Adds your current WorldEdit selection as a particle bridge", checkPermission = true)
+@AdditionalUsage(name = "remove", description = "Removes the targeted region from being a particle bridge", checkPermission = true)
 @Permission(permission = "bridge", adminCommand = true, additionalPermissions = {"add", "remove"})
 public class BridgeSubCommand extends ShatteredSub {
 

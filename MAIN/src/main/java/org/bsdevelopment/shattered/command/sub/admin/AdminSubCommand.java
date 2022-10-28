@@ -32,12 +32,12 @@ import java.util.List;
 import java.util.UUID;
 
 @ICommand(name = "admin")
-@AdditionalUsage(name = "startcountdown", description = "Starts the game countdown")
-@AdditionalUsage(name = "forcestop", description = "Forces a game to end, no winners will be selected.")
-@AdditionalUsage(name = "corners", description = "Highlights the corner of the current map region")
-@AdditionalUsage(name = "readycubes", description = "Highlights the ready cube regions")
-@AdditionalUsage(name = "spawnpoints", usage = "<tries>", description = "Will generate spawn points around the map")
-@AdditionalUsage(name = "playerstress", usage = "<iterations>", description = "Will add x amount of fake players to the data-storage file")
+@AdditionalUsage(name = "startcountdown", description = "Starts the game countdown", checkPermission = true)
+@AdditionalUsage(name = "forcestop", description = "Forces a game to end, no winners will be selected.", checkPermission = true)
+@AdditionalUsage(name = "corners", description = "Highlights the corner of the current map region", checkPermission = true)
+@AdditionalUsage(name = "readycubes", description = "Highlights the ready cube regions", checkPermission = true)
+@AdditionalUsage(name = "spawnpoints", usage = "<tries>", description = "Will generate spawn points around the map", checkPermission = true)
+@AdditionalUsage(name = "playerstress", usage = "<iterations>", description = "Will add x amount of fake players to the data-storage file", checkPermission = true)
 @Permission(permission = "admin", adminCommand = true, additionalPermissions = {"corners", "spawnpoints", "playerstress", "startcountdown"})
 public class AdminSubCommand extends ShatteredSub {
     private final Cooldown LONG_COOLDOWN;

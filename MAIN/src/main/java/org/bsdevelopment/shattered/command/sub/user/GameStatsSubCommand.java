@@ -14,18 +14,19 @@ import org.bsdevelopment.shattered.managers.Management;
 import org.bsdevelopment.shattered.utilities.MessageType;
 import org.bukkit.command.CommandSender;
 
-@ICommand(
-        name = "gamestats",
-        description = "Displays the stats for the current game"
-)
-@AdditionalUsage(
-        name = "previous",
-        description = "Displays the stats for the previous game"
-)
+import java.util.List;
+
+@ICommand(name = "gamestats", description = "Displays the stats for the current game")
+@AdditionalUsage(name = "previous", description = "Displays the stats for the previous game", checkPermission = true)
 @Permission(permission = "gamestats", additionalPermissions = "previous")
 public class GameStatsSubCommand extends ShatteredSub {
     public GameStatsSubCommand(Shattered shattered) {
         super(shattered);
+    }
+
+    @Override
+    public List<String> handleCompletions(List<String> completions, CommandSender sender, int index, String[] args) {
+        return super.handleCompletions(completions, sender, index, args);
     }
 
     @Override

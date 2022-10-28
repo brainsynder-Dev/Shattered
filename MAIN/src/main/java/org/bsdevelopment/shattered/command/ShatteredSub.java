@@ -10,6 +10,7 @@ import org.bsdevelopment.shattered.command.annotations.Permission;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ShatteredSub extends SubCommand {
@@ -27,10 +28,23 @@ public class ShatteredSub extends SubCommand {
     public List<String> handleCompletions(List<String> completions, CommandSender sender, int index, String[] args) {
         if (!canExecute(sender)) return super.handleCompletions(completions, sender, index, args);
         if (index == 1) {
-            for (AdditionalUsage additionalUsage : getAdditionalUsage(getClass()))
+            for (AdditionalUsage additionalUsage : getAdditionalUsage(getClass())) {
+                if (additionalUsage.checkPermission() && (!sender.hasPermission(getPermission(additionalUsage.name())))) continue;
                 completions.add(additionalUsage.name());
+            }
         }
         return super.handleCompletions(completions, sender, index, args);
+    }
+
+    @Override
+    public boolean canExecute(CommandSender sender) {
+        if (getClass().isAnnotationPresent(Permission.class)) {
+            Permission permission = getClass().getAnnotation(Permission.class);
+            if (permission.adminCommand() && sender.hasPermission(getPermission()))
+                return true;
+            return sender.hasPermission(getPermission());
+        }
+        return true;
     }
 
     @Override
@@ -73,10 +87,12 @@ public class ShatteredSub extends SubCommand {
             raw.send(sender);
         }
 
-        AdditionalUsage[] additionalUsages = getAdditionalUsage(getClass());
-        if (additionalUsages.length != 0) {
+        List<AdditionalUsage> additionalUsages = getAdditionalUsage(getClass());
+        if (!additionalUsages.isEmpty()) {
             String spacer = "§r ".repeat(("  [] /shattered "+command.name()).length() / 2);
             for (AdditionalUsage additional : additionalUsages) {
+                if (additional.checkPermission() && (!sender.hasPermission(getPermission(additional.name())))) continue;
+
                 raw = Tellraw.getInstance(spacer);
                 raw.then(additional.name()).color(hex2Rgb("#c8cad0"));
 
@@ -135,8 +151,12 @@ public class ShatteredSub extends SubCommand {
         }
     }
 
-    public AdditionalUsage[] getAdditionalUsage(Class<?> clazz) {
-        return clazz.getAnnotationsByType(AdditionalUsage.class);
+    public List<AdditionalUsage> getAdditionalUsage(Class<?> clazz) {
+        List<AdditionalUsage> usageList = new ArrayList<>();
+        if (clazz.isAnnotationPresent(AdditionalUsage.class)) {
+            Collections.addAll(usageList, clazz.getAnnotationsByType(AdditionalUsage.class));
+        }
+        return usageList;
     }
 
 

@@ -22,10 +22,10 @@ import java.util.List;
         name = "lobby",
         description = "Main command for all the lobby setup"
 )
-@AdditionalUsage(name = "lobbyspawn", description = "Sets the spawn point of the lobby")
-@AdditionalUsage(name = "readycube1", description = "Sets the region for one of the ready cubes")
-@AdditionalUsage(name = "readycube2", description = "Sets the region for one of the ready cubes")
-@AdditionalUsage(name = "optionsign", usage = "<option>", description = "Sets the location of a sign that will allow modifications to that option")
+@AdditionalUsage(name = "lobbyspawn", description = "Sets the spawn point of the lobby", checkPermission = true)
+@AdditionalUsage(name = "readycube1", description = "Sets the region for one of the ready cubes", checkPermission = true)
+@AdditionalUsage(name = "readycube2", description = "Sets the region for one of the ready cubes", checkPermission = true)
+@AdditionalUsage(name = "optionsign", usage = "<option>", description = "Sets the location of a sign that will allow modifications to that option", checkPermission = true)
 @Permission(permission = "lobby", adminCommand = true, additionalPermissions = {"lobbyspawn", "readycube1", "readycube2", "optionsign"})
 public class LobbySubCommand extends ShatteredSub {
 
