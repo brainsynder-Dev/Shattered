@@ -35,13 +35,14 @@ public enum ConfigOption {
 
     public final ConfigEntry<Integer> COUNTDOWN_TIME = createOption("countdown-starting-number", 40,
             """
-                    This is the number the countdown timer will start from when preparing to start the game.
+                    This is the number the countdown timer will start from when both ready cubes are ready to play
                     
                     Default: {default}""");
 
     public final ConfigEntry<Integer> SPAWN_THRESHOLD = createOption("spawnpoint.block-threshold", 3,
             """
-                    How many blocks must be around the player in order for the location to be valid
+                    How many blocks must be around the player in order for the location to be valid 
+                    NOTE: This is blocks around the players feet
                     
                     Default: {default}""").setLimits(1, 2, 3, 4);
 
