@@ -28,25 +28,28 @@ public class OtherEventListener implements Listener {
     }
 
     @EventHandler
-    public void onFoodLevelChange(FoodLevelChangeEvent e) {
-        if (!(e.getEntity() instanceof Player player)) return;
+    public void onFoodLevelChange(FoodLevelChangeEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
         if (Management.PLAYER_MANAGER.getShatteredPlayer(player).getState().getMasterState() != ShatteredPlayer.PlayerState.LOBBY)
             return;
-        e.setCancelled(true);
+        event.setCancelled(true);
     }
 
     @EventHandler
-    public void onHealthRegenChange(EntityRegainHealthEvent e) {
-        if (!(e.getEntity() instanceof Player player)) return;
-        if (Management.PLAYER_MANAGER.getShatteredPlayer(player).getState().getMasterState() != ShatteredPlayer.PlayerState.LOBBY)
+    public void onHealthRegenChange(EntityRegainHealthEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+        if (Management.PLAYER_MANAGER.getShatteredPlayer(player).getState().getMasterState() != ShatteredPlayer.PlayerState.LOBBY) return;
+        if (Management.GAME_OPTIONS_MANAGER.NO_REGENERATION.getValue()) {
+            event.setAmount(0);
+            event.setCancelled(true);
             return;
-        if (Management.GAME_OPTIONS_MANAGER.NO_REGENERATION.getValue()) return;
-        e.setAmount(0.2);
+        }
+        event.setAmount(0.2);
     }
 
     @EventHandler
-    public void onItemDrop(PlayerDropItemEvent e) {
-        if (Management.PLAYER_MANAGER.getShatteredPlayer(e.getPlayer()).getState().getMasterState() != ShatteredPlayer.PlayerState.LOBBY)
-            e.setCancelled(true);
+    public void onItemDrop(PlayerDropItemEvent event) {
+        if (Management.PLAYER_MANAGER.getShatteredPlayer(event.getPlayer()).getState().getMasterState() != ShatteredPlayer.PlayerState.LOBBY)
+            event.setCancelled(true);
     }
 }
