@@ -21,8 +21,6 @@ public class IntegerOption extends Option<Integer> {
     public static LinkedList<Integer> range (int start, int end, int increment) {
         LinkedList<Integer> list = new LinkedList<>();
 
-        start = (start - 1);
-
         while (start < end) {
             start = (start + increment);
             if (start > end) break;
