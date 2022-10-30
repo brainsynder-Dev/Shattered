@@ -15,7 +15,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Map;
 
 @GameModeData(
@@ -36,8 +36,8 @@ public class FFAGameMode extends ShatteredGameMode {
     @Override
     public void initiate() {
         Management.GAME_OPTIONS_MANAGER.register(getClass(), LIVES = new Option<>("FFA Lives", 4)
-                .setDescription("How many lives will you have in the FFA gamemode"));
-        LIVES.setValueList(IntegerOption.range(1, 20, 1));
+                .setDescription("How many lives will you have in the FFA gamemode")
+                .setValueList(IntegerOption.range(0, 20, 1)));
     }
 
     @Override
@@ -125,8 +125,8 @@ public class FFAGameMode extends ShatteredGameMode {
     }
 
     @Override
-    public List<String> getScoreboardLines() {
-        List<String> scoreboardLines = super.getScoreboardLines();
+    public LinkedList<String> getScoreboardLines() {
+        LinkedList<String> scoreboardLines = super.getScoreboardLines();
 
         int lines = 1;
         for (Map.Entry<ShatteredPlayer, Integer> entry : LIFE_MAP.entrySet()) {
