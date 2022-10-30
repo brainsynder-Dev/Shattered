@@ -38,6 +38,7 @@ public class GameOptionsManager implements IManager {
     public Option<Boolean> LOW_GRAVITY;
     public Option<Boolean> SPECIAL_BOWS;
     public Option<Boolean> BOW_JUMPER;
+    public Option<Boolean> NO_REGENERATION;
 
     public Option<Integer> BOW_SPAWN_MIN;
     public Option<Integer> BOW_SPAWN_MAX;
@@ -83,6 +84,9 @@ public class GameOptionsManager implements IManager {
 
         register(getClass(), BOW_JUMPER = new BooleanOption("Bow Jumper", false)
                 .setDescription("Left click a bow and it will jump you higher than before"));
+
+        register(getClass(), NO_REGENERATION = new BooleanOption("No Regen", false)
+                .setDescription("YOLO! No more health regeneration!"));
 
 
 

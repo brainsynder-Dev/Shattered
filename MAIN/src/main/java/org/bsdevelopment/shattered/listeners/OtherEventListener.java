@@ -40,6 +40,7 @@ public class OtherEventListener implements Listener {
         if (!(e.getEntity() instanceof Player player)) return;
         if (Management.PLAYER_MANAGER.getShatteredPlayer(player).getState().getMasterState() != ShatteredPlayer.PlayerState.LOBBY)
             return;
+        if (Management.GAME_OPTIONS_MANAGER.NO_REGENERATION.getValue()) return;
         e.setAmount(0.2);
     }
 
