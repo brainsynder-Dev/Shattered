@@ -18,10 +18,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GameOptionsManager implements IManager {
     private final Shattered PLUGIN;
@@ -85,7 +82,7 @@ public class GameOptionsManager implements IManager {
         register(getClass(), BOW_JUMPER = new BooleanOption("Bow Jumper", false)
                 .setDescription("Left click a bow and it will jump you higher than before"));
 
-        register(getClass(), NO_REGENERATION = new BooleanOption("No Regen", false)
+        register(getClass(), NO_REGENERATION = new BooleanOption("No Regeneration", false)
                 .setDescription("YOLO! No more health regeneration!"));
 
 
@@ -98,8 +95,10 @@ public class GameOptionsManager implements IManager {
                 .setValueList(IntegerOption.range(20, 160, 10))
                 .setDescription("The slowest a bow can spawn in a game"));
 
+        LinkedList<Integer> USE_MULTIPLE = IntegerOption.range(0, 10, 1);
+        USE_MULTIPLE.addFirst(0);
         register(getClass(), BOW_USE_MULTIPLIER = new IntegerOption("Bow Use Multiplier", 0)
-                .setValueList(IntegerOption.range(0, 10, 1))
+                .setValueList(USE_MULTIPLE)
                 .setDescription("Add more uses to special bows"));
     }
 
