@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class ShatteredUtilities {
     private static final VersionWrapper WRAPPER;
@@ -38,7 +39,7 @@ public class ShatteredUtilities {
 
     static {
         PLUGIN_MANAGER = Bukkit.getPluginManager();
-        WRAPPER = new VersionMatcher (Shattered.INSTANCE).match();
+        WRAPPER = new VersionMatcher(Shattered.INSTANCE).match();
     }
 
     /**
