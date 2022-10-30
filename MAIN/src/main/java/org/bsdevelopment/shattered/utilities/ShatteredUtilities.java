@@ -306,4 +306,21 @@ public class ShatteredUtilities {
             }
         }.runTaskTimer(Shattered.INSTANCE, 0, 4);
     }
+
+
+    /**
+     * "Given a time interval in milliseconds, return a string representation of the interval in the format HH:MM:SS."
+     *
+     * The function is pretty straightforward. It uses the TimeUnit class to convert the interval to hours, minutes, and
+     * seconds. It then uses String.format to return a string representation of the interval in the format HH:MM:SS
+     *
+     * @param interval The time in milliseconds to format.
+     * @return A string in the format of HH:MM:SS
+     */
+    public static String formatInterval(long interval) {
+        long hours = TimeUnit.MILLISECONDS.toHours(interval);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(interval) % 60;
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(interval) % 60;
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    }
 }

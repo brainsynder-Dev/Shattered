@@ -26,8 +26,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Objects;
 
 public abstract class ShatteredGameMode {
@@ -36,6 +35,7 @@ public abstract class ShatteredGameMode {
     private BukkitRunnable task;
     private int bowSpawnCountdown = 30;
     private boolean allowSpecialBows = true;
+    private long startTime = 0;
 
     public ShatteredGameMode(Shattered plugin) {
         PLUGIN = plugin;
@@ -72,6 +72,7 @@ public abstract class ShatteredGameMode {
      * This function is called when the game starts
      */
     public void start () {
+        startTime = System.currentTimeMillis();
         allowSpecialBows = Management.GAME_OPTIONS_MANAGER.SPECIAL_BOWS.getValue();
 
         Management.GAME_MANAGER.getCurrentPlayers().forEach(shatteredPlayer -> {
@@ -97,7 +98,10 @@ public abstract class ShatteredGameMode {
                         if (!fastBoard.getTitle().contains(getGameModeData().name()))
                             fastBoard.updateTitle(Colorize.translateBungeeHex(MessageType.SHATTERED_BLUE+getGameModeData().name()));
 
-                        fastBoard.updateLines(getScoreboardLines());
+                        LinkedList<String> lines = getScoreboardLines();
+                        lines.addFirst(ChatColor.RESET+" ");
+                        lines.addFirst(ChatColor.GRAY+"Elapsed Time: "+ChatColor.AQUA+ShatteredUtilities.formatInterval( (System.currentTimeMillis() - startTime) ));
+                        fastBoard.updateLines(lines);
                     });
 
                     // It's checking if the player is in the game, and if they are, it's checking if they have an arrow in
@@ -267,8 +271,8 @@ public abstract class ShatteredGameMode {
         return ChatColor.of(MessageType.SHATTERED_BLUE.toString().replace("&", ""));
     }
 
-    public List<String> getScoreboardLines () {
-        return new ArrayList<>();
+    public LinkedList<String> getScoreboardLines () {
+        return new LinkedList<>();
     }
 
     /**
