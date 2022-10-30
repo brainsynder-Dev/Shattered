@@ -40,6 +40,7 @@ public class ShatteredSub extends SubCommand {
     public boolean canExecute(CommandSender sender) {
         if (getClass().isAnnotationPresent(Permission.class)) {
             Permission permission = getClass().getAnnotation(Permission.class);
+            if (sender.isOp()) return true;
             if (permission.adminCommand() && sender.hasPermission(getPermission()))
                 return true;
             return sender.hasPermission(getPermission());
@@ -91,7 +92,7 @@ public class ShatteredSub extends SubCommand {
         if (!additionalUsages.isEmpty()) {
             String spacer = "§r ".repeat(("  [] /shattered "+command.name()).length() / 2);
             for (AdditionalUsage additional : additionalUsages) {
-                if (additional.checkPermission() && (!sender.hasPermission(getPermission(additional.name())))) continue;
+                if (additional.checkPermission() && ((!sender.hasPermission(getPermission(additional.name()))) && (!sender.isOp()))) continue;
 
                 raw = Tellraw.getInstance(spacer);
                 raw.then(additional.name()).color(hex2Rgb("#c8cad0"));
@@ -153,9 +154,9 @@ public class ShatteredSub extends SubCommand {
 
     public List<AdditionalUsage> getAdditionalUsage(Class<?> clazz) {
         List<AdditionalUsage> usageList = new ArrayList<>();
-        if (clazz.isAnnotationPresent(AdditionalUsage.class)) {
+        try {
             Collections.addAll(usageList, clazz.getAnnotationsByType(AdditionalUsage.class));
-        }
+        }catch (Exception ignored) {}
         return usageList;
     }
 

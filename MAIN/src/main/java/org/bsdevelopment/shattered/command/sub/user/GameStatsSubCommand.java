@@ -17,6 +17,7 @@ import org.bukkit.command.CommandSender;
 import java.util.List;
 
 @ICommand(name = "gamestats", description = "Displays the stats for the current game")
+@AdditionalUsage(name = "current", description = "Displays the stats for the current game")
 @AdditionalUsage(name = "previous", description = "Displays the stats for the previous game", checkPermission = true)
 @Permission(permission = "gamestats", additionalPermissions = "previous")
 public class GameStatsSubCommand extends ShatteredSub {
