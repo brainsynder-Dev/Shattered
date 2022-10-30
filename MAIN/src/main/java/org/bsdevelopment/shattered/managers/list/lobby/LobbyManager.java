@@ -49,10 +49,10 @@ public class LobbyManager implements IManager {
         lobbySpawn = null;
     }
 
-    public void updateLighting (ShatteredPlayer shatteredPlayer) {
+    public void updateLighting(ShatteredPlayer shatteredPlayer) {
         if (Management.GAME_OPTIONS_MANAGER.LIGHTING.getValue() == TimeType.DAY) {
             shatteredPlayer.fetchPlayer(player -> player.setPlayerTime(6000, false));
-        }else{
+        } else {
             shatteredPlayer.fetchPlayer(player -> player.setPlayerTime(18000, false));
         }
     }
@@ -63,6 +63,7 @@ public class LobbyManager implements IManager {
         shatteredPlayer.setSpectating(false);
         shatteredPlayer.setPlaying(false);
         shatteredPlayer.setState(ShatteredPlayer.PlayerState.LOBBY);
+        shatteredPlayer.removeBoard();
 
         shatteredPlayer.fetchPlayer(player -> {
             player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
@@ -70,12 +71,19 @@ public class LobbyManager implements IManager {
             player.setHealth(20);
             player.setArrowsInBody(0);
             player.teleport(lobbySpawn);
+
+            PLAYERS.forEach(shatteredPlayer1 -> {
+                if (shatteredPlayer == shatteredPlayer1) return;
+                shatteredPlayer1.fetchPlayer(other -> {
+                    other.showPlayer(PLUGIN, player);
+                });
+            });
         });
 
         updateLighting(shatteredPlayer);
     }
 
-    public void leaveLobby (ShatteredPlayer shatteredPlayer) {
+    public void leaveLobby(ShatteredPlayer shatteredPlayer) {
         PLAYERS.remove(shatteredPlayer);
 
         shatteredPlayer.setSpectating(false);
@@ -100,11 +108,11 @@ public class LobbyManager implements IManager {
     }
 
     public void setReadyCube1(Cuboid readyCube) {
-        this.readyCube1 = new ReadyCube (this, ChatColor.DARK_GREEN, readyCube);
+        this.readyCube1 = new ReadyCube(this, ChatColor.DARK_GREEN, readyCube);
     }
 
     public void setReadyCube2(Cuboid readyCube) {
-        this.readyCube2 = new ReadyCube (this, ChatColor.DARK_PURPLE, readyCube);
+        this.readyCube2 = new ReadyCube(this, ChatColor.DARK_PURPLE, readyCube);
     }
 
     public void setLobbySpawn(Location location) {

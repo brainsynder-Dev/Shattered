@@ -216,13 +216,24 @@ public abstract class ShatteredGameMode {
         shatteredPlayer.fetchPlayer(player -> {
             player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
             player.setFallDistance(0);
+            player.setHealth(20);
 
             Location location = getSpawnLocation(shatteredPlayer).add(0.5, 0.5, 0.5);
             Location lookAt = Utilities.lookAt(location, Management.ARENA_MANAGER.getRegion().getCenter());
             player.teleport(lookAt);
-            player.setHealth(20);
 
             if (Management.GAME_OPTIONS_MANAGER.LOW_GRAVITY.getValue()) player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 3, true, false));
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    Management.GAME_MANAGER.getCurrentPlayers().forEach(shatteredPlayer1 -> {
+                        if (shatteredPlayer == shatteredPlayer1) return;
+                        shatteredPlayer1.fetchPlayer(other -> {
+                            other.showPlayer(PLUGIN, player);
+                        });
+                    });
+                }
+            }.runTaskLater(PLUGIN, 1);
         });
         ShatteredUtilities.fireShatteredEvent(new ShatteredPlayerRespawnEvent(shatteredPlayer, this));
     }
@@ -288,7 +299,6 @@ public abstract class ShatteredGameMode {
             ShatteredUtilities.fireShatteredEvent(new ShatteredPlayerDeathEvent(shatteredPlayer, this, reasons));
             checkForWin();
         }
-
     }
 
     /**

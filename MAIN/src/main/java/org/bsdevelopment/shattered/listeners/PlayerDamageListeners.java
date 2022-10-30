@@ -61,6 +61,12 @@ public class PlayerDamageListeners implements Listener {
 
         // Checking if the player is going to die from the damage, and if they are, it cancels the event and calls the `onDeath` method.
         if ((player.getHealth() - event.getDamage()) < 1) {
+            Management.GAME_MANAGER.getCurrentPlayers().forEach(shatteredPlayer1 -> {
+                if (shatteredPlayer1 == shatteredPlayer) return;
+                shatteredPlayer1.fetchPlayer(other -> {
+                    other.hidePlayer(PLUGIN, player);
+                });
+            });
             event.setCancelled(true);
             gameMode.onDeath(shatteredPlayer, reason, true);
         }
@@ -151,6 +157,12 @@ public class PlayerDamageListeners implements Listener {
         // This is checking if the victim is going to die from the damage, and if they are, it cancels the event and calls
         // the `onDeathByPlayer` method.
         if ((((player.getHealth() - 0.5) - event.getDamage()) < 1) || Management.GAME_OPTIONS_MANAGER.GOLDEN_BOW.getValue()) {
+            Management.GAME_MANAGER.getCurrentPlayers().forEach(shatteredPlayer -> {
+                if (victim == shatteredPlayer) return;
+                shatteredPlayer.fetchPlayer(other -> {
+                    other.hidePlayer(PLUGIN, player);
+                });
+            });
             event.setDamage(0);
             event.setCancelled(true);
             gameMode.onDeathByPlayer(victim, attacker, true);
