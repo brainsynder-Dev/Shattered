@@ -1,11 +1,13 @@
 package org.bsdevelopment.shattered.option;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Objects;
 
 public class Option<T> {
     private final LinkedList<T> VALUE_STORAGE;
     private final String name;
+    private final String storage_name;
     private T defaultValue;
 
     private T value;
@@ -14,7 +16,12 @@ public class Option<T> {
     private String description;
 
     public Option(String name, T defaultValue, T... allValues) {
+        this(name, name, defaultValue, allValues);
+    }
+
+    public Option(String storage_name, String name, T defaultValue, T... allValues) {
         this.name = name;
+        this.storage_name = storage_name;
         VALUE_STORAGE = new LinkedList<>();
 
         this.defaultValue = defaultValue;
@@ -28,7 +35,7 @@ public class Option<T> {
      *
      * @param collection The collection of values to be added to the list.
      */
-    public Option<T> setValueList (LinkedList<T> collection) {
+    public Option<T> setValueList (Collection<T> collection) {
         VALUE_STORAGE.clear();
 
         for (T t : collection) {
@@ -109,7 +116,7 @@ public class Option<T> {
      * @return The name of the storage, with spaces replaced by underscores and all letters in lowercase.
      */
     public String getStorageName () {
-        return name.replace(" ", "_").toLowerCase();
+        return storage_name.replace(" ", "_").toLowerCase();
     }
 
     /**

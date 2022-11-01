@@ -20,6 +20,12 @@ public class IntegerOption extends Option<Integer> {
 
     public static LinkedList<Integer> range (int start, int end, int increment) {
         LinkedList<Integer> list = new LinkedList<>();
+        list.addFirst(start);
+
+        if (increment <= 0) {
+            list.addLast(end);
+            return list;
+        }
 
         while (start < end) {
             start = (start + increment);
