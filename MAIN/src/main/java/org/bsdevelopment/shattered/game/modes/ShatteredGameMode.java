@@ -339,6 +339,10 @@ public abstract class ShatteredGameMode {
         VOID
     }
 
+    public Shattered getShattered() {
+        return PLUGIN;
+    }
+
     @Override
     public String toString() {
         return getGameModeData().name();

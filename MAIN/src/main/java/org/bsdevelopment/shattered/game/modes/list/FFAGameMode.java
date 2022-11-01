@@ -2,6 +2,7 @@ package org.bsdevelopment.shattered.game.modes.list;
 
 import org.bsdevelopment.shattered.Shattered;
 import org.bsdevelopment.shattered.events.player.ShatteredPlayerEliminatedEvent;
+import org.bsdevelopment.shattered.files.options.ConfigOption;
 import org.bsdevelopment.shattered.game.GameModeData;
 import org.bsdevelopment.shattered.game.GameState;
 import org.bsdevelopment.shattered.game.ShatteredPlayer;
@@ -11,6 +12,7 @@ import org.bsdevelopment.shattered.option.IntegerOption;
 import org.bsdevelopment.shattered.option.Option;
 import org.bsdevelopment.shattered.utilities.MessageType;
 import org.bsdevelopment.shattered.utilities.ShatteredUtilities;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -26,6 +28,7 @@ public class FFAGameMode extends ShatteredGameMode {
     private final LinkedHashMap<ShatteredPlayer, Integer> LIFE_MAP;
 
     private Option<Integer> LIVES;
+    private String SCORE_LINE_FORMAT = "";
 
     public FFAGameMode(Shattered plugin) {
         super(plugin);
@@ -35,9 +38,23 @@ public class FFAGameMode extends ShatteredGameMode {
 
     @Override
     public void initiate() {
-        Management.GAME_OPTIONS_MANAGER.register(getClass(), LIVES = new Option<>("FFA Lives", 4)
-                .setDescription("How many lives will you have in the FFA gamemode")
-                .setValueList(IntegerOption.range(0, 20, 1)));
+        Management.GAME_OPTIONS_MANAGER.register(getClass(), LIVES = new Option<>("ffa_lives", ConfigOption.INSTANCE.FFA_OPTION_NAME.getValue(), ConfigOption.INSTANCE.FFA_DEFAULT_LIVES.getValue())
+                .setDescription(ConfigOption.INSTANCE.FFA_OPTION_DESCRIPTION.getValue()));
+
+        if (!ConfigOption.INSTANCE.FFA_LIFE_LIST.getValue().isEmpty()) {
+            LIVES.setValueList(ConfigOption.INSTANCE.FFA_LIFE_LIST.getValue());
+        }else{
+            int start = ConfigOption.INSTANCE.FFA_RANGE_START.getValue();
+            int end = ConfigOption.INSTANCE.FFA_RANGE_END.getValue();
+            int increment = ConfigOption.INSTANCE.FFA_RANGE_INCREMENT.getValue();
+
+            if (start > end) {
+                getShattered().sendPrefixedMessage(Bukkit.getConsoleSender(), MessageType.ERROR, "[FFA] Your start value is bigger than your end value... we will invert them for you (please update in your config file)");
+                LIVES.setValueList(IntegerOption.range(end, start, increment));
+            }else{
+                LIVES.setValueList(IntegerOption.range(start, end, increment));
+            }
+        }
     }
 
     @Override
@@ -59,6 +76,7 @@ public class FFAGameMode extends ShatteredGameMode {
     @Override
     public void start() {
         super.start();
+        SCORE_LINE_FORMAT = ConfigOption.INSTANCE.FFA_SCOREBOARD_LINE.getValue();
 
         // Adding all the players in the game to the map with 4 lives.
         Management.GAME_MANAGER.getCurrentPlayers().forEach(shatteredPlayer -> {
@@ -137,7 +155,10 @@ public class FFAGameMode extends ShatteredGameMode {
             // Checking if the player has any lives left. If they don't, it skips them.
             if (lives <= 0) continue;
 
-            scoreboardLines.add(ChatColor.GRAY + entry.getKey().getName() + ": " + ChatColor.GREEN + lives);
+            scoreboardLines.add(ChatColor.translateAlternateColorCodes('&', SCORE_LINE_FORMAT
+                    .replace("{name}", entry.getKey().getName())
+                    .replace("{lives}", String.valueOf(lives))
+            ));
             lines++;
         }
         return scoreboardLines;
